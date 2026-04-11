@@ -6,211 +6,232 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Gobo Pro">
-    <link rel="apple-touch-icon" href="https://via.placeholder.com/180/2c3e50/ffffff?text=Gobo">
-    
-    <title>Gobo Pro - Studio & Maker</title>
+    <title>Gobo Pro - Ultimate Engineering</title>
     <style>
-        :root { --primary: #2c3e50; --secondary: #3498db; --accent: #e67e22; --bg: #f4f6f8; --text: #333; }
+        :root { --primary: #2c3e50; --secondary: #3498db; --accent: #e67e22; --success: #27ae60; --warning: #f1c40f; --bg: #f4f6f8; }
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: var(--bg); margin: 0; padding: 20px; padding-top: env(safe-area-inset-top); padding-bottom: 20px; }
+        body { background-color: var(--bg); margin: 0; padding: 20px; padding-top: env(safe-area-inset-top); }
         .app-container { max-width: 600px; margin: auto; background: #fff; padding: 25px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 25px; }
-        .card { background: #fafafa; border: 1px solid #eee; padding: 20px; border-radius: 15px; margin-bottom: 20px; transition: 0.3s; }
-        .card-title { font-size: 14px; font-weight: bold; color: #7f8c8d; margin-bottom: 12px; }
-        label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; font-weight: bold; }
-        input[type="number"], input[type="file"] { width: 100%; padding: 14px; border: 1px solid #ccc; border-radius: 10px; margin-bottom: 15px; font-size: 16px; transition: border 0.3s; }
-        input[type="number"]:focus { border-color: var(--secondary); outline: none; }
-        input[type="file"] { background: #fff; border: 2px dashed #ccc; cursor: pointer; padding: 20px; text-align: center; }
+        h1 { text-align: center; color: var(--primary); font-size: 22px; margin-bottom: 20px; }
+        .card { background: #fafafa; border: 1px solid #eee; padding: 18px; border-radius: 15px; margin-bottom: 15px; }
+        .card-title { font-size: 14px; font-weight: bold; color: #7f8c8d; margin-bottom: 12px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        label { display: block; font-size: 13px; color: #555; margin-bottom: 5px; font-weight: bold; }
+        input[type="number"], input[type="file"], select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; margin-bottom: 12px; font-size: 16px; }
+        .btn-main { width: 100%; padding: 15px; background: var(--secondary); color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
         
-        /* تصميم عناصر التحكم */
-        .slider-container { margin-bottom: 20px; }
-        .slider-label { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
-        input[type="range"] { width: 100%; cursor: pointer; accent-color: var(--accent); }
+        .auto-calc-area { background: #fff; border: 2px solid var(--secondary); padding: 15px; border-radius: 12px; margin-top: 10px; }
+        .warning-box { background: #fcf3cf; color: #9a7d0a; padding: 10px; border-radius: 8px; font-size: 12px; margin-top: 10px; display: none; text-align: center; font-weight:bold; }
         
-        .checkbox-group { display: flex; align-items: center; margin-bottom: 15px; font-size: 15px; cursor: pointer; }
-        .checkbox-group input { margin-left: 10px; width: 20px; height: 20px; accent-color: var(--accent); }
+        .slider-container { margin-top: 15px; }
+        input[type="range"] { width: 100%; accent-color: var(--accent); }
+        .canvas-container { text-align: center; margin-top: 20px; background: #fff; padding: 10px; border-radius: 10px; display: none; }
+        canvas { max-width: 100%; height: auto; border-radius: 10px; }
+        #downloadBtn { display: none; background: var(--success); margin-top: 20px; }
         
-        button { width: 100%; padding: 16px; background: var(--secondary); color: #fff; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #2980b9; }
-        button:active { transform: scale(0.98); }
-        button:disabled { background: #bdc3c7; cursor: not-allowed; }
-        
-        .result-text { font-size: 19px; color: var(--primary); font-weight: bold; text-align: center; margin-top: 15px; line-height: 1.5; }
-        
-        /* ========================================= */
-        /* التعديل هنا لإلغاء المربع الأسود المحيط */
-        /* ========================================= */
-        .canvas-container { 
-            text-align: center; 
-            margin-top: 20px; 
-            position: relative; 
-            background: #ffffff; /* تم تغيير الخلفية للأبيض */
-            border-radius: 10px; 
-            overflow: hidden; 
-            padding: 10px; 
-            display: none; 
-            border: none; /* إزالة أي حدود */
-        }
-        canvas { 
-            max-width: 100%; 
-            height: auto; 
-            border: none; /* إزالة الحدود حول الكانفاس نفسه */
-        }
-        /* ========================================= */
-        
-        #downloadBtn { display: none; background: #27ae60; margin-top: 20px; }
-        #downloadBtn:hover { background: #219653; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <h1>🎯 Gobo Pro - Studio & Maker</h1>
+    <h1>🎯 Gobo Pro (JWB Edition)</h1>
 
     <div class="card">
-        <div class="card-title">1. القياسات الميدانية (بالمتر)</div>
-        <label>المسافة من الجدار (D):</label>
-        <input type="number" id="dist" placeholder="مثال: 10" step="0.1">
+        <div class="card-title">1. القياسات الميدانية (التصغير وتشوه المنظور)</div>
         
-        <label>ارتفاع البروجكتور (H_pj):</label>
-        <input type="number" id="hProj" placeholder="مثال: 1.5" step="0.1">
+        <label>عدسة جهازك (Lens Scale):</label>
+        <select id="lensRatio">
+            <option value="0.2">0.2 Scale (للمسافات البعيدة)</option>
+            <option value="0.3" selected>0.3 Scale (العدسة الافتراضية - Default)</option>
+            <option value="0.45">0.45 Scale (للمسافات المتوسطة)</option>
+            <option value="0.65">0.65 Scale (للمسافات القريبة)</option>
+        </select>
+
+        <div class="grid-2">
+            <div>
+                <label>المسافة للجدار (D):</label>
+                <input type="number" id="dist" placeholder="بالمتر">
+            </div>
+            <div>
+                <label>ارتفاع البروجكتور (H_pj):</label>
+                <input type="number" id="hProj" placeholder="بالمتر">
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div>
+                <label>أعلى نقطة للتصميم (H_top):</label>
+                <input type="number" id="hTop" placeholder="بالمتر">
+            </div>
+            <div>
+                <label>أدنى نقطة للتصميم (H_bot):</label>
+                <input type="number" id="hBottom" placeholder="بالمتر">
+            </div>
+        </div>
         
-        <label>ارتفاع أعلى نقطة للصورة (H_top):</label>
-        <input type="number" id="hTop" placeholder="مثال: 8" step="0.1">
-        
-        <label>ارتفاع أدنى نقطة للصورة (H_bottom):</label>
-        <input type="number" id="hBottom" placeholder="مثال: 4" step="0.1">
-        
-        <button onclick="calculate()">احسب التهيؤ الميداني</button>
-        <div id="calcResults" class="result-text" style="display: none;">
-            نسبة القمة: <span id="ratioVal" style="color: #e74c3c;">--</span><br>
-            زاوية العدسة: <span id="angleVal" style="color: #e74c3c;">--</span>
+        <div class="auto-calc-area">
+            <label>العرض المستهدف للتصميم (بالمتر):</label>
+            <input type="number" id="targetW" placeholder="عرض الشعار المطلوب على الجدار">
+        </div>
+
+        <div id="resultsBox" style="display:none; margin-top:15px; text-align:center;">
+            <div style="font-size:14px; color:#666;">القطر الأقصى لضوء العدسة: <b id="maxDia">--</b> م</div>
+            <div style="font-size:18px; color:var(--accent); margin-top:5px;">تم ضبط التصغير التلقائي (Scale) إلى: <b id="suggestedScale">--</b></div>
+            <div style="font-size:14px; color:#c0392b; margin-top:5px;">معامل عصر المنظور (Keystone): <b id="ratioVal">--</b></div>
+            <div id="warning" class="warning-box">⚠️ تنبيه: هدفك أكبر من قدرة العدسة! ستحتاج لإرجاع البروجكتور للخلف أو تغيير العدسة.</div>
         </div>
     </div>
 
-    <div class="card" id="imageProcessorCard" style="display: none;">
-        <div class="card-title">2. التجهيز التلقائي للتصميم الميداني والعدسة</div>
-        <label>اختر تصميم Gobo الأصلي دقة عالية:</label>
+    <div class="card" id="processorCard" style="display:none;">
+        <div class="card-title">2. تجهيز ملف التصنيع (Gobo 37mm)</div>
         <input type="file" id="imageUpload" accept="image/*">
         
         <div class="slider-container">
-            <div class="slider-label">
-                <span>درجة التباين (Threshold): <span id="thresholdValue" style="color:var(--accent); font-weight:bold;">128</span></span>
-            </div>
+            <label style="display:flex; justify-content:space-between;">
+                <span>تعديل يدوي للحجم (Scale):</span> 
+                <span id="scaleValDisplay" style="color:var(--accent); font-weight:bold;">100%</span>
+            </label>
+            <input type="range" id="scaleSlider" min="5" max="100" value="100">
+        </div>
+
+        <div class="slider-container">
+            <label style="display:flex; justify-content:space-between;">
+                <span>درجة التباين (Threshold):</span> 
+                <span id="thresholdValDisplay" style="color:var(--accent); font-weight:bold;">128</span>
+            </label>
             <input type="range" id="thresholdSlider" min="0" max="255" value="128">
         </div>
 
-        <label class="checkbox-group">
-            <input type="checkbox" id="invertColors">
-            عكس الألوان
-        </label>
-        
-        <label class="checkbox-group">
-            <input type="checkbox" id="circularMask" checked>
-            تطبيق القناع الدائري
-        </label>
-
-        <button id="processBtn" onclick="processImage()" disabled>⬆️ تجهيز الصورة وعصرها</button>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <label style="font-size:13px; cursor:pointer;"><input type="checkbox" id="invert"> عكس الألوان (لإضاءة الشعار)</label>
+            <label style="font-size:13px; cursor:pointer;"><input type="checkbox" id="mask" checked> قناع العدسة (37mm)</label>
+        </div>
         
         <div class="canvas-container" id="previewArea">
             <canvas id="canvas"></canvas>
+            <button id="downloadBtn" class="btn-main" onclick="downloadGobo()">⬇️ حفظ الملف للإرسال لـ AliExpress</button>
         </div>
-        <button id="downloadBtn" onclick="downloadImage()">⬇️ حفظ التصميم الجاهز بأعلى جودة</button>
     </div>
 </div>
 
 <script>
-    let globalRatio = 1;
-    let originalImage = null;
+    let originalImg = null;
+    let globalRatio = 1; // لحفظ نسبة العصر (Keystone)
 
-    function calculate() {
-        const D = parseFloat(document.getElementById('dist').value);
-        const H_pj = parseFloat(document.getElementById('hProj').value);
-        const H_top = parseFloat(document.getElementById('hTop').value);
-        const H_bottom = parseFloat(document.getElementById('hBottom').value);
+    // تشغيل الحسبة التلقائية بمجرد كتابة أي رقم
+    const inputsToWatch = ['dist', 'hProj', 'hTop', 'hBottom', 'targetW'];
+    inputsToWatch.forEach(id => {
+        document.getElementById(id).addEventListener('input', calculateSystem);
+    });
+    document.getElementById('lensRatio').addEventListener('change', calculateSystem);
 
-        if (D > 0 && H_top > H_bottom) {
-            const h_top_rel = H_top - H_pj;
-            const h_bottom_rel = H_bottom - H_pj;
-            const S_top = Math.sqrt(Math.pow(D, 2) + Math.pow(h_top_rel, 2));
-            const S_bottom = Math.sqrt(Math.pow(D, 2) + Math.pow(h_bottom_rel, 2));
-            globalRatio = S_bottom / S_top;
-            const angleTop = Math.atan(h_top_rel / D);
-            const angleBottom = Math.atan(h_bottom_rel / D);
-            const totalAngle = Math.abs(angleTop - angleBottom) * (180 / Math.PI);
-            document.getElementById('calcResults').style.display = 'block';
-            document.getElementById('ratioVal').innerText = (globalRatio * 100).toFixed(1) + "%";
-            document.getElementById('angleVal').innerText = totalAngle.toFixed(1) + "°";
-            document.getElementById('imageProcessorCard').style.display = 'block';
-        } else {
-            alert("يرجى إدخال أرقام صحيحة.");
+    function calculateSystem() {
+        const d = parseFloat(document.getElementById('dist').value);
+        const hProj = parseFloat(document.getElementById('hProj').value);
+        const hTop = parseFloat(document.getElementById('hTop').value);
+        const hBottom = parseFloat(document.getElementById('hBottom').value);
+        const tW = parseFloat(document.getElementById('targetW').value);
+        const lensRatio = parseFloat(document.getElementById('lensRatio').value);
+
+        if (!d || !hProj || !hTop || !hBottom || !tW) {
+            document.getElementById('resultsBox').style.display = 'none';
+            return; 
         }
+
+        // 1. حساب معامل عصر المنظور (Keystone)
+        const h_top_rel = hTop - hProj;
+        const h_bottom_rel = hBottom - hProj;
+        const S_top = Math.sqrt(Math.pow(d, 2) + Math.pow(h_top_rel, 2));
+        const S_bottom = Math.sqrt(Math.pow(d, 2) + Math.pow(h_bottom_rel, 2));
+        globalRatio = S_bottom / S_top;
+        document.getElementById('ratioVal').innerText = (globalRatio * 100).toFixed(1) + "%";
+
+        // 2. حساب القطر الأقصى والتصغير التلقائي (Scale)
+        const maxDiameter = d * lensRatio;
+        document.getElementById('maxDia').innerText = maxDiameter.toFixed(2);
+
+        const targetH = hTop - hBottom; // تم الاستغناء عن إدخال الارتفاع وصار يحسب تلقائياً
+        const targetMax = Math.max(tW, targetH);
+        let scale = (targetMax / maxDiameter) * 100;
+
+        if (scale > 100) {
+            document.getElementById('warning').style.display = 'block';
+            scale = 100;
+        } else {
+            document.getElementById('warning').style.display = 'none';
+        }
+
+        document.getElementById('suggestedScale').innerText = scale.toFixed(1) + "%";
+        document.getElementById('resultsBox').style.display = 'block';
+        document.getElementById('processorCard').style.display = 'block';
+        
+        document.getElementById('scaleSlider').value = scale;
+        document.getElementById('scaleValDisplay').innerText = scale.toFixed(1) + "%";
+        
+        if(originalImg) processGobo();
     }
 
-    document.getElementById('imageUpload').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+    document.getElementById('imageUpload').onchange = function(e) {
         const reader = new FileReader();
-        reader.onload = function(event) {
-            originalImage = new Image();
-            originalImage.onload = () => {
-                const canvas = document.getElementById('canvas');
-                canvas.width = originalImage.width;
-                canvas.height = originalImage.height;
-                document.getElementById('processBtn').disabled = false;
-                processImage();
-            };
-            originalImage.src = event.target.result;
+        reader.onload = (ev) => {
+            originalImg = new Image();
+            originalImg.onload = () => processGobo();
+            originalImg.src = ev.target.result;
         };
-        reader.readAsDataURL(file);
-    });
+        reader.readAsDataURL(e.target.files[0]);
+    };
 
-    document.getElementById('thresholdSlider').addEventListener('input', (e) => {
-        document.getElementById('thresholdValue').textContent = e.target.value;
-        if(originalImage) processImage();
-    });
-    document.getElementById('invertColors').addEventListener('change', () => { if(originalImage) processImage(); });
-    document.getElementById('circularMask').addEventListener('change', () => { if(originalImage) processImage(); });
+    document.getElementById('scaleSlider').oninput = (e) => {
+        document.getElementById('scaleValDisplay').innerText = e.target.value + "%";
+        if(originalImg) processGobo();
+    };
+    
+    document.getElementById('thresholdSlider').oninput = (e) => {
+        document.getElementById('thresholdValDisplay').innerText = e.target.value;
+        if(originalImg) processGobo();
+    };
+    
+    document.getElementById('invert').onchange = () => { if(originalImg) processGobo(); };
+    document.getElementById('mask').onchange = () => { if(originalImg) processGobo(); };
 
-    function processImage() {
-        if (!originalImage) return;
+    function processGobo() {
+        if (!originalImg) return;
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const W = originalImage.width;
-        const H = originalImage.height;
-        const size = Math.max(W, H);
-        if(canvas.width !== size || canvas.height !== size) { canvas.width = size; canvas.height = size; }
-        
-        // رسم خلفية شفافة أولاً
-        ctx.fillStyle = "rgba(0,0,0,0)";
-        ctx.fillRect(0, 0, size, size);
+        const size = Math.max(originalImg.width, originalImg.height);
+        canvas.width = size; canvas.height = size;
 
-        const offsetX = (size - W) / 2;
-        const offsetY = (size - H) / 2;
-        ctx.drawImage(originalImage, offsetX, offsetY);
-
-        const imageData = ctx.getImageData(0, 0, size, size);
-        const data = imageData.data;
+        const scale = document.getElementById('scaleSlider').value / 100;
+        const inv = document.getElementById('invert').checked;
         const threshold = parseInt(document.getElementById('thresholdSlider').value);
-        const invert = document.getElementById('invertColors').checked;
 
-        for (let i = 0; i < data.length; i += 4) {
-            const r = data[i]; const g = data[i+1]; const b = data[i+2];
-            let brightness = (0.299 * r + 0.587 * g + 0.114 * b);
-            let colorValue = brightness > threshold ? 255 : 0;
-            if (invert) { colorValue = colorValue === 255 ? 0 : 255; }
-            data[i] = data[i+1] = data[i+2] = colorValue;
-            data[i+3] = 255; 
+        // 1. التباين والتصغير المبدئي
+        ctx.fillStyle = "rgba(0,0,0,0)";
+        ctx.fillRect(0,0,size,size);
+
+        const w = originalImg.width * scale;
+        const h = originalImg.height * scale;
+        const offsetX = (size-w)/2;
+        const offsetY = (size-h)/2;
+        ctx.drawImage(originalImg, offsetX, offsetY, w, h);
+
+        const imgData = ctx.getImageData(0,0,size,size);
+        for (let i=0; i<imgData.data.length; i+=4) {
+            if (imgData.data[i+3] === 0) continue; // تجاوز الفراغات الشفافة
+            let avg = (imgData.data[i] * 0.299 + imgData.data[i+1] * 0.587 + imgData.data[i+2] * 0.114);
+            let val = avg > threshold ? 255 : 0;
+            if (inv) val = 255 - val;
+            imgData.data[i] = imgData.data[i+1] = imgData.data[i+2] = val;
+            imgData.data[i+3] = 255;
         }
-        ctx.putImageData(imageData, 0, 0);
+        ctx.putImageData(imgData, 0, 0);
 
+        // 2. تطبيق عصر المنظور (Keystone) على الصورة المصغرة
         const squeezedCanvas = document.createElement('canvas');
         squeezedCanvas.width = size; squeezedCanvas.height = size;
         const squeezedCtx = squeezedCanvas.getContext('2d');
         
-        // رسم خلفية شفافة للمنطقة التي سيتم العصر فيها
-        squeezedCtx.fillStyle = "rgba(0,0,0,0)";
+        squeezedCtx.fillStyle = inv ? "#000" : "#fff";
         squeezedCtx.fillRect(0, 0, size, size);
 
         for (let y = 0; y < size; y++) {
@@ -219,12 +240,13 @@
             let offX = (size - currentWidth) / 2;
             squeezedCtx.drawImage(canvas, 0, y, size, 1, offX, y, currentWidth, 1);
         }
-        
-        if (document.getElementById('circularMask').checked) {
+
+        // 3. تطبيق قناع العدسة الدائري النهائي
+        if (document.getElementById('mask').checked) {
             squeezedCtx.globalCompositeOperation = 'destination-in';
-            squeezedCtx.beginPath();
-            squeezedCtx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-            squeezedCtx.fill();
+            squeezedCtx.beginPath(); squeezedCtx.arc(size/2, size/2, size/2, 0, Math.PI*2); squeezedCtx.fill();
+            squeezedCtx.globalCompositeOperation = 'destination-over';
+            squeezedCtx.fillStyle = "#000"; squeezedCtx.fillRect(0,0,size,size);
             squeezedCtx.globalCompositeOperation = 'source-over';
         }
 
@@ -234,11 +256,11 @@
         document.getElementById('downloadBtn').style.display = 'block';
     }
 
-    function downloadImage() {
-        const canvas = document.getElementById('canvas');
-        const dataURL = canvas.toDataURL('image/png');
+    function downloadGobo() {
         const link = document.createElement('a');
-        link.download = 'Gobo_Pro_Prepared.png'; link.href = dataURL; link.click();
+        link.download = 'Gobo_Ultimate_JWB.png';
+        link.href = document.getElementById('canvas').toDataURL('image/png');
+        link.click();
     }
 </script>
 
