@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GoboPro">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/180/2c3e50/ffffff?text=Gobo">
+    
+    <title>حاسبة ومعالج Gobo</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #3498db; --bg: #f4f6f8; }
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: var(--bg); margin: 0; padding: 20px; padding-top: env(safe-area-inset-top); }
+        .app-container { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { text-align: center; color: var(--primary); font-size: 22px; margin-bottom: 20px; }
+        .card { background: #fafafa; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .card-title { font-size: 14px; font-weight: bold; color: #7f8c8d; margin-bottom: 10px; }
+        label { display: block; font-size: 13px; color: #333; margin-bottom: 5px; font-weight: bold; }
+        input[type="number"], input[type="file"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 10px; font-size: 16px; }
+        button { width: 100%; padding: 14px; background: var(--secondary); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:active { background: #2980b9; transform: scale(0.98); }
+        button:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .result-text { font-size: 18px; color: var(--primary); font-weight: bold; text-align: center; margin-top: 10px; }
+        canvas { max-width: 100%; height: auto; border: 1px dashed #ccc; margin-top: 15px; border-radius: 8px; display: none; }
+        #downloadBtn { display: none; background: #27ae60; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h1>Gobo Pro 🎯</h1>
+
+    <div class="card">
+        <div class="card-title">1. القياسات الميدانية (بالمتر)</div>
+        <label>المسافة من الجدار (D):</label>
+        <input type="number" id="dist" placeholder="مثال: 10" step="0.1">
+        
+        <label>ارتفاع البروجكتور (H_pj):</label>
+        <input type="number" id="hProj" placeholder="مثال: 1.5" step="0.1">
+        
+        <label>ارتفاع أعلى نقطة للصورة (H_top):</label>
+        <input type="number" id="hTop" placeholder="مثال: 8" step="0.1">
+        
+        <label>ارتفاع أدنى نقطة للصورة (H_bottom):</label>
+        <input type="number" id="hBottom" placeholder="مثال: 4" step="0.1">
+        
+        <button onclick="calculate()">احسب الزوايا</button>
+        <div id="calcResults" class="result-text" style="display: none;">
+            نسبة القمة: <span id="ratioVal" style="color: #e74c3c;">--</span><br>
+            زاوية العدسة: <span id="angleVal" style="color: #e74c3c;">--</span>
+        </div>
+    </div>
+
+    <div class="card" id="imageProcessorCard" style="display: none;">
+        <div class="card-title">2. المعالجة التلقائية للتصميم</div>
+        <input type="file" id="imageUpload" accept="image/*">
+        <button id="processBtn" onclick="processImage()" disabled>عصر الصورة وتجهيزها</button>
+        
+        <canvas id="canvas"></canvas>
+        <button id="downloadBtn" onclick="downloadImage()">⬇️ حفظ الصورة المعدلة</button>
+    </div>
+</div>
+
+<script>
+    let globalRatio = 1; // لحفظ النسبة لاستخدامها في معالجة الصورة
+
+    // 1. دالة الحساب الهندسي
+    function calculate() {
+        const D = parseFloat(document.getElementById('dist').value);
+        const H_pj = parseFloat(document.getElementById('hProj').value);
+        const H_top = parseFloat(document.getElementById('hTop').value);
+        const H_bottom = parseFloat(document.getElementById('hBottom').value);
+
+        if (D > 0 && H_top > H_bottom) {
+            const h_top_rel = H_top - H_pj;
+            const h_bottom_rel = H_bottom - H_pj;
+
+            const S_top = Math.sqrt(Math.pow(D, 2) + Math.pow(h_top_rel, 2));
+            const S_bottom = Math.sqrt(Math.pow(D, 2) + Math.pow(h_bottom_rel, 2));
+            
+            globalRatio = S_bottom / S_top; // النسبة الحقيقية (مثلاً 0.85)
+
+            const angleTop = Math.atan(h_top_rel / D);
+            const angleBottom = Math.atan(h_bottom_rel / D);
+            const totalAngle = Math.abs(angleTop - angleBottom) * (180 / Math.PI);
+
+            document.getElementById('calcResults').style.display = 'block';
+            document.getElementById('ratioVal').innerText = (globalRatio * 100).toFixed(1) + "%";
+            document.getElementById('angleVal').innerText = totalAngle.toFixed(1) + "°";
+
+            // تفعيل قسم الصور
+            document.getElementById('imageProcessorCard').style.display = 'block';
+        } else {
+            alert("تأكد من إدخال الأرقام بشكل صحيح (يجب أن يكون H_top أكبر من H_bottom).");
+        }
+    }
+
+    // تفعيل زر المعالجة عند اختيار صورة
+    document.getElementById('imageUpload').addEventListener('change', function() {
+        document.getElementById('processBtn').disabled = !this.files.length;
+    });
+
+    // 2. دالة معالجة وعصر الصورة
+    function processImage() {
+        const file = document.getElementById('imageUpload').files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // تحديد أبعاد مساحة العمل مطابقة للصورة الأصلية
+                canvas.width = img.width;
+                canvas.height = img.height;
+                
+                // مسح الخلفية ووضع لون أسود أو شفاف (للفراغات الناتجة عن العصر)
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // خوارزمية العصر (Keystone Effect) بكسل تلو الآخر عمودياً
+                const W = img.width;
+                const H = img.height;
+                
+                for (let y = 0; y < H; y++) {
+                    // نسبة موقع الخط الحالي (0 في الأعلى، 1 في الأسفل)
+                    const t = y / H;
+                    
+                    // العرض الجديد لهذا الخط
+                    // في الأعلى (t=0) العرض هو W * ratio
+                    // في الأسفل (t=1) العرض هو W الكامل
+                    const currentWidth = (W * globalRatio) * (1 - t) + (W * t);
+                    
+                    // حساب الإزاحة الأفقية ليكون الشكل في المنتصف
+                    const offsetX = (W - currentWidth) / 2;
+                    
+                    // رسم شريحة بارتفاع 1 بكسل من الصورة الأصلية وعرضها الجديد
+                    ctx.drawImage(
+                        img, 
+                        0, y, W, 1,          // اقتطاع من المصدر
+                        offsetX, y, currentWidth, 1 // رسم في الهدف
+                    );
+                }
+
+                canvas.style.display = 'block';
+                document.getElementById('downloadBtn').style.display = 'block';
+            }
+            img.src = event.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+
+    // 3. دالة التحميل للأيفون
+    function downloadImage() {
+        const canvas = document.getElementById('canvas');
+        const link = document.createElement('a');
+        link.download = 'Gobo_Processed.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+</script>
+
+</body>
+</html>
