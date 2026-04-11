@@ -5,32 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="GoboPro">
+    <meta name="apple-mobile-web-app-title" content="Gobo Pro">
     <link rel="apple-touch-icon" href="https://via.placeholder.com/180/2c3e50/ffffff?text=Gobo">
     
-    <title>حاسبة ومعالج Gobo</title>
+    <title>Gobo Pro - Studio & Maker</title>
     <style>
-        :root { --primary: #2c3e50; --secondary: #3498db; --bg: #f4f6f8; }
+        :root { --primary: #2c3e50; --secondary: #3498db; --accent: #e67e22; --bg: #f4f6f8; --text: #333; }
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: var(--bg); margin: 0; padding: 20px; padding-top: env(safe-area-inset-top); }
-        .app-container { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h1 { text-align: center; color: var(--primary); font-size: 22px; margin-bottom: 20px; }
-        .card { background: #fafafa; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        .card-title { font-size: 14px; font-weight: bold; color: #7f8c8d; margin-bottom: 10px; }
-        label { display: block; font-size: 13px; color: #333; margin-bottom: 5px; font-weight: bold; }
-        input[type="number"], input[type="file"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 10px; font-size: 16px; }
-        button { width: 100%; padding: 14px; background: var(--secondary); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:active { background: #2980b9; transform: scale(0.98); }
+        body { background-color: var(--bg); margin: 0; padding: 20px; padding-top: env(safe-area-inset-top); padding-bottom: 20px; }
+        .app-container { max-width: 600px; margin: auto; background: #fff; padding: 25px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 25px; }
+        .card { background: #fafafa; border: 1px solid #eee; padding: 20px; border-radius: 15px; margin-bottom: 20px; transition: 0.3s; }
+        .card-title { font-size: 14px; font-weight: bold; color: #7f8c8d; margin-bottom: 12px; }
+        label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; font-weight: bold; }
+        input[type="number"], input[type="file"] { width: 100%; padding: 14px; border: 1px solid #ccc; border-radius: 10px; margin-bottom: 15px; font-size: 16px; transition: border 0.3s; }
+        input[type="number"]:focus { border-color: var(--secondary); outline: none; }
+        input[type="file"] { background: #fff; border: 2px dashed #ccc; cursor: pointer; padding: 20px; text-align: center; }
+        
+        /* تصميم عناصر التحكم */
+        .slider-container { margin-bottom: 20px; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
+        input[type="range"] { width: 100%; cursor: pointer; accent-color: var(--accent); }
+        
+        .checkbox-group { display: flex; align-items: center; margin-bottom: 15px; font-size: 15px; cursor: pointer; }
+        .checkbox-group input { margin-left: 10px; width: 20px; height: 20px; accent-color: var(--accent); }
+        
+        button { width: 100%; padding: 16px; background: var(--secondary); color: #fff; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #2980b9; }
+        button:active { transform: scale(0.98); }
         button:disabled { background: #bdc3c7; cursor: not-allowed; }
-        .result-text { font-size: 18px; color: var(--primary); font-weight: bold; text-align: center; margin-top: 10px; }
-        canvas { max-width: 100%; height: auto; border: 1px dashed #ccc; margin-top: 15px; border-radius: 8px; display: none; }
-        #downloadBtn { display: none; background: #27ae60; margin-top: 15px; }
+        
+        .result-text { font-size: 19px; color: var(--primary); font-weight: bold; text-align: center; margin-top: 15px; line-height: 1.5; }
+        
+        /* ========================================= */
+        /* التعديل هنا لإلغاء المربع الأسود المحيط */
+        /* ========================================= */
+        .canvas-container { 
+            text-align: center; 
+            margin-top: 20px; 
+            position: relative; 
+            background: #ffffff; /* تم تغيير الخلفية للأبيض */
+            border-radius: 10px; 
+            overflow: hidden; 
+            padding: 10px; 
+            display: none; 
+            border: none; /* إزالة أي حدود */
+        }
+        canvas { 
+            max-width: 100%; 
+            height: auto; 
+            border: none; /* إزالة الحدود حول الكانفاس نفسه */
+        }
+        /* ========================================= */
+        
+        #downloadBtn { display: none; background: #27ae60; margin-top: 20px; }
+        #downloadBtn:hover { background: #219653; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <h1>Gobo Pro 🎯</h1>
+    <h1>🎯 Gobo Pro - Studio & Maker</h1>
 
     <div class="card">
         <div class="card-title">1. القياسات الميدانية (بالمتر)</div>
@@ -46,7 +81,7 @@
         <label>ارتفاع أدنى نقطة للصورة (H_bottom):</label>
         <input type="number" id="hBottom" placeholder="مثال: 4" step="0.1">
         
-        <button onclick="calculate()">احسب الزوايا</button>
+        <button onclick="calculate()">احسب التهيؤ الميداني</button>
         <div id="calcResults" class="result-text" style="display: none;">
             نسبة القمة: <span id="ratioVal" style="color: #e74c3c;">--</span><br>
             زاوية العدسة: <span id="angleVal" style="color: #e74c3c;">--</span>
@@ -54,19 +89,40 @@
     </div>
 
     <div class="card" id="imageProcessorCard" style="display: none;">
-        <div class="card-title">2. المعالجة التلقائية للتصميم</div>
+        <div class="card-title">2. التجهيز التلقائي للتصميم الميداني والعدسة</div>
+        <label>اختر تصميم Gobo الأصلي دقة عالية:</label>
         <input type="file" id="imageUpload" accept="image/*">
-        <button id="processBtn" onclick="processImage()" disabled>عصر الصورة وتجهيزها</button>
         
-        <canvas id="canvas"></canvas>
-        <button id="downloadBtn" onclick="downloadImage()">⬇️ حفظ الصورة المعدلة</button>
+        <div class="slider-container">
+            <div class="slider-label">
+                <span>درجة التباين (Threshold): <span id="thresholdValue" style="color:var(--accent); font-weight:bold;">128</span></span>
+            </div>
+            <input type="range" id="thresholdSlider" min="0" max="255" value="128">
+        </div>
+
+        <label class="checkbox-group">
+            <input type="checkbox" id="invertColors">
+            عكس الألوان
+        </label>
+        
+        <label class="checkbox-group">
+            <input type="checkbox" id="circularMask" checked>
+            تطبيق القناع الدائري
+        </label>
+
+        <button id="processBtn" onclick="processImage()" disabled>⬆️ تجهيز الصورة وعصرها</button>
+        
+        <div class="canvas-container" id="previewArea">
+            <canvas id="canvas"></canvas>
+        </div>
+        <button id="downloadBtn" onclick="downloadImage()">⬇️ حفظ التصميم الجاهز بأعلى جودة</button>
     </div>
 </div>
 
 <script>
-    let globalRatio = 1; // لحفظ النسبة لاستخدامها في معالجة الصورة
+    let globalRatio = 1;
+    let originalImage = null;
 
-    // 1. دالة الحساب الهندسي
     function calculate() {
         const D = parseFloat(document.getElementById('dist').value);
         const H_pj = parseFloat(document.getElementById('hProj').value);
@@ -76,90 +132,113 @@
         if (D > 0 && H_top > H_bottom) {
             const h_top_rel = H_top - H_pj;
             const h_bottom_rel = H_bottom - H_pj;
-
             const S_top = Math.sqrt(Math.pow(D, 2) + Math.pow(h_top_rel, 2));
             const S_bottom = Math.sqrt(Math.pow(D, 2) + Math.pow(h_bottom_rel, 2));
-            
-            globalRatio = S_bottom / S_top; // النسبة الحقيقية (مثلاً 0.85)
-
+            globalRatio = S_bottom / S_top;
             const angleTop = Math.atan(h_top_rel / D);
             const angleBottom = Math.atan(h_bottom_rel / D);
             const totalAngle = Math.abs(angleTop - angleBottom) * (180 / Math.PI);
-
             document.getElementById('calcResults').style.display = 'block';
             document.getElementById('ratioVal').innerText = (globalRatio * 100).toFixed(1) + "%";
             document.getElementById('angleVal').innerText = totalAngle.toFixed(1) + "°";
-
-            // تفعيل قسم الصور
             document.getElementById('imageProcessorCard').style.display = 'block';
         } else {
-            alert("تأكد من إدخال الأرقام بشكل صحيح (يجب أن يكون H_top أكبر من H_bottom).");
+            alert("يرجى إدخال أرقام صحيحة.");
         }
     }
 
-    // تفعيل زر المعالجة عند اختيار صورة
-    document.getElementById('imageUpload').addEventListener('change', function() {
-        document.getElementById('processBtn').disabled = !this.files.length;
-    });
-
-    // 2. دالة معالجة وعصر الصورة
-    function processImage() {
-        const file = document.getElementById('imageUpload').files[0];
+    document.getElementById('imageUpload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = function(event) {
-            const img = new Image();
-            img.onload = function() {
+            originalImage = new Image();
+            originalImage.onload = () => {
                 const canvas = document.getElementById('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                // تحديد أبعاد مساحة العمل مطابقة للصورة الأصلية
-                canvas.width = img.width;
-                canvas.height = img.height;
-                
-                // مسح الخلفية ووضع لون أسود أو شفاف (للفراغات الناتجة عن العصر)
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // خوارزمية العصر (Keystone Effect) بكسل تلو الآخر عمودياً
-                const W = img.width;
-                const H = img.height;
-                
-                for (let y = 0; y < H; y++) {
-                    // نسبة موقع الخط الحالي (0 في الأعلى، 1 في الأسفل)
-                    const t = y / H;
-                    
-                    // العرض الجديد لهذا الخط
-                    // في الأعلى (t=0) العرض هو W * ratio
-                    // في الأسفل (t=1) العرض هو W الكامل
-                    const currentWidth = (W * globalRatio) * (1 - t) + (W * t);
-                    
-                    // حساب الإزاحة الأفقية ليكون الشكل في المنتصف
-                    const offsetX = (W - currentWidth) / 2;
-                    
-                    // رسم شريحة بارتفاع 1 بكسل من الصورة الأصلية وعرضها الجديد
-                    ctx.drawImage(
-                        img, 
-                        0, y, W, 1,          // اقتطاع من المصدر
-                        offsetX, y, currentWidth, 1 // رسم في الهدف
-                    );
-                }
-
-                canvas.style.display = 'block';
-                document.getElementById('downloadBtn').style.display = 'block';
-            }
-            img.src = event.target.result;
-        }
+                canvas.width = originalImage.width;
+                canvas.height = originalImage.height;
+                document.getElementById('processBtn').disabled = false;
+                processImage();
+            };
+            originalImage.src = event.target.result;
+        };
         reader.readAsDataURL(file);
+    });
+
+    document.getElementById('thresholdSlider').addEventListener('input', (e) => {
+        document.getElementById('thresholdValue').textContent = e.target.value;
+        if(originalImage) processImage();
+    });
+    document.getElementById('invertColors').addEventListener('change', () => { if(originalImage) processImage(); });
+    document.getElementById('circularMask').addEventListener('change', () => { if(originalImage) processImage(); });
+
+    function processImage() {
+        if (!originalImage) return;
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const W = originalImage.width;
+        const H = originalImage.height;
+        const size = Math.max(W, H);
+        if(canvas.width !== size || canvas.height !== size) { canvas.width = size; canvas.height = size; }
+        
+        // رسم خلفية شفافة أولاً
+        ctx.fillStyle = "rgba(0,0,0,0)";
+        ctx.fillRect(0, 0, size, size);
+
+        const offsetX = (size - W) / 2;
+        const offsetY = (size - H) / 2;
+        ctx.drawImage(originalImage, offsetX, offsetY);
+
+        const imageData = ctx.getImageData(0, 0, size, size);
+        const data = imageData.data;
+        const threshold = parseInt(document.getElementById('thresholdSlider').value);
+        const invert = document.getElementById('invertColors').checked;
+
+        for (let i = 0; i < data.length; i += 4) {
+            const r = data[i]; const g = data[i+1]; const b = data[i+2];
+            let brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+            let colorValue = brightness > threshold ? 255 : 0;
+            if (invert) { colorValue = colorValue === 255 ? 0 : 255; }
+            data[i] = data[i+1] = data[i+2] = colorValue;
+            data[i+3] = 255; 
+        }
+        ctx.putImageData(imageData, 0, 0);
+
+        const squeezedCanvas = document.createElement('canvas');
+        squeezedCanvas.width = size; squeezedCanvas.height = size;
+        const squeezedCtx = squeezedCanvas.getContext('2d');
+        
+        // رسم خلفية شفافة للمنطقة التي سيتم العصر فيها
+        squeezedCtx.fillStyle = "rgba(0,0,0,0)";
+        squeezedCtx.fillRect(0, 0, size, size);
+
+        for (let y = 0; y < size; y++) {
+            let t = y / size;
+            let currentWidth = (size * globalRatio) * (1 - t) + (size * t);
+            let offX = (size - currentWidth) / 2;
+            squeezedCtx.drawImage(canvas, 0, y, size, 1, offX, y, currentWidth, 1);
+        }
+        
+        if (document.getElementById('circularMask').checked) {
+            squeezedCtx.globalCompositeOperation = 'destination-in';
+            squeezedCtx.beginPath();
+            squeezedCtx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+            squeezedCtx.fill();
+            squeezedCtx.globalCompositeOperation = 'source-over';
+        }
+
+        canvas.width = size; canvas.height = size;
+        ctx.drawImage(squeezedCanvas, 0, 0);
+        document.getElementById('previewArea').style.display = 'block';
+        document.getElementById('downloadBtn').style.display = 'block';
     }
 
-    // 3. دالة التحميل للأيفون
     function downloadImage() {
         const canvas = document.getElementById('canvas');
+        const dataURL = canvas.toDataURL('image/png');
         const link = document.createElement('a');
-        link.download = 'Gobo_Processed.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        link.download = 'Gobo_Pro_Prepared.png'; link.href = dataURL; link.click();
     }
 </script>
 
