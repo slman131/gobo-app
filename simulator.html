@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gobo Pro - Visual Simulator</title>
+    <style>
+        :root { --bg: #1a1a1c; --card: #252529; --primary: #3498db; --success: #2ecc71; --text: #ecf0f1; --muted: #95a5a6; }
+        body { margin: 0; padding: 20px; font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+        .container { max-width: 900px; margin: auto; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-btn { background: #333; color: white; text-decoration: none; padding: 8px 15px; border-radius: 8px; font-size: 14px; border: 1px solid #444; transition: 0.3s; }
+        .back-btn:hover { background: #444; }
+
+        .simulator-card { background: var(--card); border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .stats-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+        .title { font-size: 20px; font-weight: bold; }
+        .stat-box { text-align: left; margin-right: 20px; }
+        .stat-label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px;}
+        .stat-value { font-size: 24px; font-weight: bold; color: white; display: inline-block; margin-left: 20px;}
+        .stat-value.scale { color: var(--success); }
+
+        .canvas-container { width: 100%; background: #1a1a1c; border-radius: 12px; margin-bottom: 25px; overflow: hidden; border: 1px solid #333;}
+        canvas { width: 100%; display: block; }
+
+        .controls-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media(min-width: 768px) { .controls-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .control-group { display: flex; align-items: center; justify-content: space-between; background: #1e1e22; padding: 10px 15px; border-radius: 10px; border: 1px solid #333;}
+        .control-label { font-size: 14px; width: 40%; }
+        input[type="range"] { width: 40%; accent-color: var(--primary); }
+        input[type="number"] { width: 60px; background: #111; border: 1px solid #444; color: white; padding: 8px; border-radius: 6px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <a href="index.html" class="back-btn">⬅ العودة للحاسبة الرئيسية</a>
+    </div>
+
+    <div class="simulator-card">
+        <div class="stats-row">
+            <div class="title">مخطط عرض الجوبو (Visual Simulator)</div>
+            <div style="display: flex;">
+                <div class="stat-box">
+                    <span class="stat-label">القطر الأقصى المتاح</span>
+                    <span class="stat-value" id="valDia">6.38 م</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">نسبة التصغير (SCALE)</span>
+                    <span class="stat-value scale" id="valScale">94.0%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="simCanvas" width="800" height="400"></canvas>
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-group">
+                <span class="control-label">المسافة من الجدار (متر)</span>
+                <input type="range" id="distSlider" min="1" max="20" step="0.5" value="6">
+                <input type="number" id="distInput" value="6">
+            </div>
+            <div class="control-group">
+                <span class="control-label">زاوية عدسة الجهاز (درجة)</span>
+                <input type="range" id="angleSlider" min="10" max="90" step="1" value="56">
+                <input type="number" id="angleInput" value="56">
+            </div>
+            <div class="control-group">
+                <span class="control-label">العرض المستهدف (متر)</span>
+                <input type="range" id="widthSlider" min="1" max="15" step="0.1" value="5">
+                <input type="number" id="widthInput" value="5">
+            </div>
+            <div class="control-group">
+                <span class="control-label">الارتفاع المستهدف (متر)</span>
+                <input type="range" id="heightSlider" min="1" max="15" step="0.1" value="6">
+                <input type="number" id="heightInput" value="6">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const inputs = ['dist', 'angle', 'width', 'height'];
+    const state = { dist: 6, angle: 56, width: 5, height: 6 };
+
+    // ربط المدخلات وتحديث الحالة
+    inputs.forEach(id => {
+        const slider = document.getElementById(id + 'Slider');
+        const num = document.getElementById(id + 'Input');
+        
+        slider.addEventListener('input', (e) => { num.value = e.target.value; state[id] = parseFloat(e.target.value); draw(); });
+        num.addEventListener('input', (e) => { slider.value = e.target.value; state[id] = parseFloat(e.target.value); draw(); });
+    });
+
+    function draw() {
+        // الحسابات الرياضية
+        // تحويل الزاوية إلى راديان وحساب القطر الأقصى
+        const maxDia = 2 * state.dist * Math.tan((state.angle / 2) * (Math.PI / 180));
+        const targetMax = Math.max(state.width, state.height);
+        let scale = (targetMax / maxDia) * 100;
+        
+        // تحديث النصوص
+        document.getElementById('valDia').innerText = maxDia.toFixed(2) + ' م';
+        
+        const scaleEl = document.getElementById('valScale');
+        if(scale > 100) {
+            scaleEl.innerText = "أكبر من العدسة!";
+            scaleEl.style.color = "#e74c3c";
+            scale = 100;
+        } else {
+            scaleEl.innerText = scale.toFixed(1) + '%';
+            scaleEl.style.color = "#2ecc71";
+        }
+
+        // الرسم على الكانفاس
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const projX = 100;
+        const projY = canvas.height / 2;
+        const pixelsPerMeter = 30; // مقياس الرسم
+        const wallX = projX + (state.dist * pixelsPerMeter);
+        const radiusPixels = (maxDia / 2) * pixelsPerMeter;
+
+        // رسم خط المسافة المتقطع
+        ctx.beginPath();
+        ctx.setLineDash([5, 5]);
+        ctx.moveTo(projX + 20, projY);
+        ctx.lineTo(wallX, projY);
+        ctx.strokeStyle = '#555';
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#95a5a6';
+        ctx.font = '14px Arial';
+        ctx.fillText(state.dist + 'm', projX + (wallX - projX)/2, projY - 10);
+
+        // رسم مخروط الضوء
+        ctx.beginPath();
+        ctx.moveTo(projX + 20, projY);
+        ctx.lineTo(wallX, projY - radiusPixels);
+        ctx.lineTo(wallX, projY + radiusPixels);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(52, 152, 219, 0.1)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(52, 152, 219, 0.5)';
+        ctx.stroke();
+
+        // رسم الجدار (المساحة المضاءة)
+        ctx.beginPath();
+        ctx.moveTo(wallX, projY - radiusPixels);
+        ctx.lineTo(wallX, projY + radiusPixels);
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = '#3498db';
+        ctx.stroke();
+
+        // رسم مساحة الهدف (Target)
+        const targetRadiusPixels = (targetMax / 2) * pixelsPerMeter;
+        ctx.beginPath();
+        ctx.moveTo(wallX, projY - targetRadiusPixels);
+        ctx.lineTo(wallX, projY + targetRadiusPixels);
+        ctx.lineWidth = 12;
+        ctx.strokeStyle = 'rgba(46, 204, 113, 0.8)';
+        ctx.stroke();
+        ctx.lineWidth = 1;
+
+        // رسم البروجكتور
+        ctx.fillStyle = '#9b59b6';
+        ctx.fillRect(projX - 30, projY - 20, 50, 40);
+        ctx.fillStyle = '#ecf0f1';
+        ctx.beginPath();
+        ctx.moveTo(projX + 20, projY - 10);
+        ctx.lineTo(projX + 30, projY - 15);
+        ctx.lineTo(projX + 30, projY + 15);
+        ctx.lineTo(projX + 20, projY + 10);
+        ctx.fill();
+    }
+
+    // أول رسمة عند تحميل الصفحة
+    draw();
+</script>
+</body>
+</html>
