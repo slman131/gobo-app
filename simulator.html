@@ -3,57 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gobo Pro - 3D Visual Simulator</title>
+    <title>Gobo Pro - Fully Interactive 3D Simulator</title>
     <style>
-        :root { --bg: #0d0d15; --panel: rgba(25, 25, 40, 0.95); --primary: #9b59b6; --secondary: #3498db; --design: #ff00ff; --text: #f1f2f6; --border: rgba(255, 255, 255, 0.1); }
+        :root { --bg: #080810; --panel: rgba(20, 20, 35, 0.98); --primary: #9b59b6; --secondary: #3498db; --design: #ff00ff; --text: #f1f2f6; --border: rgba(255, 255, 255, 0.1); }
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { margin: 0; padding: 20px; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        body { margin: 0; padding: 15px; background: var(--bg); color: var(--text); overflow-x: hidden; }
         
-        .header { display: flex; justify-content: space-between; align-items: center; max-width: 1300px; margin: 0 auto 20px; }
-        .back-btn { background: var(--panel); color: white; text-decoration: none; padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border); font-size: 14px; transition: 0.3s; }
-        .back-btn:hover { background: var(--primary); box-shadow: 0 0 15px var(--primary); }
+        .header { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto 15px; }
+        .back-btn { background: var(--panel); color: white; text-decoration: none; padding: 8px 18px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; transition: 0.3s; }
+        .back-btn:hover { background: var(--primary); }
 
-        .app-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; max-width: 1500px; margin: auto; }
-        @media (max-width: 1100px) { .app-grid { grid-template-columns: 1fr; } }
+        .app-grid { display: grid; grid-template-columns: 1fr 400px; gap: 15px; max-width: 1600px; margin: auto; height: calc(100vh - 80px); }
+        @media (max-width: 1100px) { .app-grid { grid-template-columns: 1fr; height: auto; } }
 
-        .simulator-viewport { background: #000; border-radius: 30px; position: relative; border: 2px solid #1e1e30; height: 650px; overflow: hidden; box-shadow: inset 0 0 100px rgba(0,0,0,1); }
+        .simulator-viewport { background: #000; border-radius: 25px; border: 2px solid #1e1e30; position: relative; overflow: hidden; box-shadow: inset 0 0 100px #000; }
         canvas { width: 100%; height: 100%; display: block; }
 
-        .controls-panel { background: var(--panel); border-radius: 30px; padding: 25px; border: 1px solid var(--border); backdrop-filter: blur(15px); height: fit-content; overflow-y: auto; }
-        .control-group { background: rgba(255,255,255,0.03); padding: 18px; border-radius: 20px; margin-bottom: 18px; border: 1px solid var(--border); }
-        .control-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .control-label { font-size: 14px; font-weight: bold; color: var(--secondary); }
+        .controls-panel { background: var(--panel); border-radius: 25px; padding: 20px; border: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .control-group { background: rgba(255,255,255,0.03); padding: 12px 15px; border-radius: 15px; border: 1px solid var(--border); }
+        .control-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .control-label { font-size: 13px; font-weight: bold; color: var(--secondary); }
         
-        input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; height: 6px; }
-        input[type="number"] { width: 75px; background: #000; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 10px; text-align: center; font-size: 15px; font-weight: bold; }
-        select { width: 100%; background: #000; color: #fff; border: 1px solid #444; padding: 12px; border-radius: 12px; margin-top: 5px; font-size: 14px; }
+        input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+        input[type="number"] { width: 70px; background: #000; border: 1px solid #444; color: #fff; padding: 6px; border-radius: 8px; text-align: center; font-weight: bold; }
+        select { width: 100%; background: #000; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 10px; }
 
-        .status-card { background: #000; border-radius: 20px; padding: 20px; margin-bottom: 20px; border-right: 5px solid var(--primary); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .status-label { font-size: 11px; color: #888; text-transform: uppercase; }
-        .status-val { font-size: 18px; font-weight: bold; color: #fff; }
+        .status-display { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 5px; }
+        .status-box { background: #000; padding: 12px; border-radius: 15px; border-bottom: 3px solid var(--primary); }
+        .status-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 4px; }
+        .status-val { font-size: 16px; font-weight: bold; color: #fff; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2 style="margin:0; color:var(--primary);">🎯 Gobo Simulator (Realistic Edition)</h2>
+    <h2 style="margin:0; color:var(--primary); font-size: 20px;">🎬 Gobo Simulator 3D - النسخة التفاعلية</h2>
     <a href="index.html" class="back-btn">⬅ العودة للحاسبة الرئيسية</a>
 </div>
 
 <div class="app-grid">
     <div class="simulator-viewport">
-        <canvas id="renderCanvas"></canvas>
+        <canvas id="mainCanvas"></canvas>
     </div>
 
     <div class="controls-panel">
-        <div class="status-card">
-            <div>
-                <div class="status-label">ارتفاع التصميم الفعلي:</div>
-                <div class="status-val" id="disp_calcH">0.00 م</div>
+        <div class="status-display">
+            <div class="status-box">
+                <div class="status-label">ارتفاع التصميم:</div>
+                <div class="status-val" id="calc_H">0.00 م</div>
             </div>
-            <div>
+            <div class="status-box">
                 <div class="status-label">أقصى قطر للعدسة:</div>
-                <div class="status-val" id="disp_maxB">0.00 م</div>
+                <div class="status-val" id="calc_MaxB">0.00 م</div>
             </div>
         </div>
 
@@ -65,10 +66,26 @@
             <input type="range" id="bHeight_slide" min="5" max="50" value="15">
         </div>
 
+        <div class="control-group" style="border-color: var(--primary);">
+            <div class="control-head">
+                <span class="control-label">🏗️ ارتفاع البروجكتور ($H_{pj}$)</span>
+                <input type="number" id="hProj_num" value="1.5">
+            </div>
+            <input type="range" id="hProj_slide" min="0" max="15" step="0.1" value="1.5">
+        </div>
+
+        <div class="control-group">
+            <div class="control-head">
+                <span class="control-label">📏 المسافة للجدار ($D$)</span>
+                <input type="number" id="dist_num" value="8.5">
+            </div>
+            <input type="range" id="dist_slide" min="1" max="40" step="0.5" value="8.5">
+        </div>
+
         <div class="control-group">
             <div class="control-head"><span class="control-label">🔎 نوع العدسة (Scale)</span></div>
             <select id="lens">
-                <option value="0.2">0.2 Scale (Long Throw)</option>
+                <option value="0.2">0.2 Scale</option>
                 <option value="0.3">0.3 Scale (Default)</option>
                 <option value="0.45">0.45 Scale</option>
                 <option value="0.65" selected>0.65 Scale (Wide Angle)</option>
@@ -77,23 +94,15 @@
 
         <div class="control-group">
             <div class="control-head">
-                <span class="control-label">📏 المسافة للجدار (D)</span>
-                <input type="number" id="dist_num" value="8.5">
+                <span class="control-label">↔️ عرض التصميم (متر)</span>
+                <input type="number" id="tWidth_num" value="5.0">
             </div>
-            <input type="range" id="dist_slide" min="1" max="50" step="0.5" value="8.5">
+            <input type="range" id="tWidth_slide" min="0.5" max="25" step="0.1" value="5.0">
         </div>
 
         <div class="control-group">
             <div class="control-head">
-                <span class="control-label">✨ عرض التصميم (متر)</span>
-                <input type="number" id="tWidth_num" value="6.0">
-            </div>
-            <input type="range" id="tWidth_slide" min="0.5" max="25" step="0.1" value="6.0">
-        </div>
-
-        <div class="control-group">
-            <div class="control-head">
-                <span class="control-label">⬆️ أعلى نقطة (H_top)</span>
+                <span class="control-label">⬆️ أعلى نقطة ($H_{top}$)</span>
                 <input type="number" id="hTop_num" value="10.0">
             </div>
             <input type="range" id="hTop_slide" min="0" max="50" step="0.1" value="10.0">
@@ -101,7 +110,7 @@
 
         <div class="control-group">
             <div class="control-head">
-                <span class="control-label">⬇️ أدنى نقطة (H_bot)</span>
+                <span class="control-label">⬇️ أدنى نقطة ($H_{bot}$)</span>
                 <input type="number" id="hBot_num" value="4.0">
             </div>
             <input type="range" id="hBot_slide" min="0" max="50" step="0.1" value="4.0">
@@ -110,72 +119,92 @@
 </div>
 
 <script>
-    const canvas = document.getElementById('renderCanvas');
+    const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d');
 
-    const state = { bHeight: 15, lens: 0.65, dist: 8.5, tWidth: 6.0, hTop: 10, hBot: 4 };
+    const state = { bHeight: 15, hProj: 1.5, dist: 8.5, tWidth: 5, hTop: 10, hBot: 4, lens: 0.65 };
 
-    // وظيفة الربط المتبادل بين المربع والسلايدر
     function sync(id) {
         const slide = document.getElementById(id + '_slide');
         const num = document.getElementById(id + '_num');
-        
-        slide.addEventListener('input', (e) => {
-            num.value = e.target.value;
-            state[id] = parseFloat(e.target.value);
-            draw();
-        });
-        
-        num.addEventListener('input', (e) => {
-            slide.value = e.target.value;
-            state[id] = parseFloat(e.target.value);
-            draw();
-        });
+        slide.addEventListener('input', (e) => { num.value = e.target.value; state[id] = parseFloat(e.target.value); draw(); });
+        num.addEventListener('input', (e) => { slide.value = e.target.value; state[id] = parseFloat(e.target.value); draw(); });
     }
 
-    ['bHeight', 'dist', 'tWidth', 'hTop', 'hBot'].forEach(sync);
+    ['bHeight', 'hProj', 'dist', 'tWidth', 'hTop', 'hBot'].forEach(sync);
     document.getElementById('lens').onchange = (e) => { state.lens = parseFloat(e.target.value); draw(); };
+
+    function drawProjector(x, y, angle) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+
+        // جسم البروجكتور
+        ctx.fillStyle = "#2c3e50";
+        ctx.fillRect(-30, -15, 60, 30);
+        
+        // العدسة (Lens)
+        ctx.fillStyle = "#7f8c8d";
+        ctx.beginPath();
+        ctx.moveTo(30, -10); ctx.lineTo(45, -15);
+        ctx.lineTo(45, 15); ctx.lineTo(30, 10);
+        ctx.fill();
+
+        // تفاصيل (أزرار/فتحات تهوية)
+        ctx.strokeStyle = "rgba(255,255,255,0.2)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(-25, -10, 10, 5);
+        
+        ctx.restore();
+        
+        // الحامل (Stand)
+        ctx.strokeStyle = "#444";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(x, y + 15);
+        ctx.lineTo(x, canvas.height - 60); // خط واصل للأرضية
+        ctx.stroke();
+    }
 
     function draw() {
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
         
-        const pxMeter = (canvas.height - 120) / state.bHeight;
+        const pxMeter = (canvas.height - 120) / Math.max(state.bHeight, 20);
         const groundY = canvas.height - 60;
-        const wallX = canvas.width - 250;
-        const projX = 100;
-        const projY = groundY - (1.5 * pxMeter);
+        const wallX = canvas.width - 200;
 
-        // 1. رسم المبنى الواقعي
+        // 1. حساب موقع البروجكتور التفاعلي
+        const projX = wallX - (state.dist * pxMeter);
+        const projY = groundY - (state.hProj * pxMeter);
+
+        // 2. رسم الأرضية والمبنى
+        ctx.fillStyle = "#111"; ctx.fillRect(0, groundY, canvas.width, 60);
         const bh_px = state.bHeight * pxMeter;
-        ctx.fillStyle = "#161625";
-        ctx.fillRect(wallX, groundY - bh_px, 200, bh_px);
+        ctx.fillStyle = "#1a1a2e"; ctx.fillRect(wallX, groundY - bh_px, 150, bh_px);
         
-        // رسم النوافذ لواقعية أكثر
-        ctx.fillStyle = "rgba(52, 152, 219, 0.1)";
-        for(let row=1; row < state.bHeight; row+=3) {
-            for(let col=0; col<3; col++) {
-                ctx.fillRect(wallX + 20 + (col*60), groundY - (row*pxMeter) - 30, 40, 40);
+        // تفاصيل المبنى (نوافذ وباب)
+        ctx.fillStyle = "rgba(255,255,255,0.03)";
+        for(let h=2; h < state.bHeight; h+=4) {
+            for(let w=20; w<120; w+=50) {
+                ctx.fillRect(wallX + w, groundY - (h*pxMeter), 30, 40);
             }
         }
-        
-        // رسم الباب والسقف
-        ctx.fillStyle = "#000"; ctx.fillRect(wallX + 75, groundY - 50, 50, 50);
-        ctx.strokeStyle = "#2c3e50"; ctx.lineWidth = 4; ctx.strokeRect(wallX, groundY - bh_px, 200, bh_px);
 
-        // 2. الحسابات
+        // 3. حسابات الضوء
         const actualH = Math.abs(state.hTop - state.hBot);
         const maxDia = state.dist * state.lens;
-        document.getElementById('disp_calcH').innerText = actualH.toFixed(2) + " م";
-        document.getElementById('disp_maxB').innerText = maxDia.toFixed(2) + " م";
+        document.getElementById('calc_H').innerText = actualH.toFixed(2) + " م";
+        document.getElementById('calc_MaxB').innerText = maxDia.toFixed(2) + " م";
 
-        // 3. رسم الشعاع
         const beamCenterY = groundY - (((state.hTop + state.hBot)/2) * pxMeter);
         const beamRadPX = (maxDia / 2) * pxMeter;
+        const angle = Math.atan2(beamCenterY - projY, wallX - projX);
 
-        const grad = ctx.createRadialGradient(projX, projY, 0, projX, projY, canvas.width);
+        // 4. رسم الشعاع (Beam)
+        const grad = ctx.createRadialGradient(projX, projY, 0, projX, projY, state.dist * pxMeter * 1.5);
         grad.addColorStop(0, 'rgba(52, 152, 219, 0.4)');
-        grad.addColorStop(0.7, 'rgba(52, 152, 219, 0.05)');
+        grad.addColorStop(0.8, 'rgba(52, 152, 219, 0.02)');
         grad.addColorStop(1, 'transparent');
 
         ctx.beginPath();
@@ -185,37 +214,34 @@
         ctx.closePath();
         ctx.fillStyle = grad; ctx.fill();
 
-        // 4. برواز التصميم (الأيقونة المضيئة)
+        // 5. رسم البروجكتور (بوضعية تفاعلية)
+        drawProjector(projX, projY, angle);
+
+        // 6. برواز التصميم المضيء (الهدف)
         const desH_px = actualH * pxMeter;
-        const desW_px = (state.tWidth / state.dist) * 400; // تمثيل بصري للعرض
+        const desW_px = state.tWidth * pxMeter; 
         const desY = groundY - (state.hTop * pxMeter);
 
         ctx.shadowBlur = 20; ctx.shadowColor = "#ff00ff";
         ctx.strokeStyle = "#ff00ff"; ctx.lineWidth = 3;
-        ctx.setLineDash([8, 4]);
-        ctx.strokeRect(wallX - 10, desY, 20, desH_px); // أيقونة الارتفاع على الجدار
+        ctx.setLineDash([10, 5]);
         
-        // رسم مستطيل يمثل "العرض" بشكل متوهج
-        ctx.fillStyle = "rgba(255, 0, 255, 0.2)";
+        // رسم "الأيقونة" المستطيلة التي تمثل العرض والارتفاع
+        ctx.strokeRect(wallX - (desW_px/2), desY, desW_px, desH_px);
+        ctx.fillStyle = "rgba(255, 0, 255, 0.15)";
         ctx.fillRect(wallX - (desW_px/2), desY, desW_px, desH_px);
         
         ctx.setLineDash([]); ctx.shadowBlur = 0;
 
-        // 5. النصوص والمقاسات
-        ctx.fillStyle = "#fff"; ctx.font = "bold 14px Segoe UI"; ctx.textAlign = "right";
-        ctx.fillText(`الارتفاع: ${actualH.toFixed(2)} م`, wallX - 20, desY + (desH_px/2));
-        ctx.fillText(`العرض: ${state.tWidth.toFixed(2)} م`, wallX - 20, desY + (desH_px/2) + 20);
-        
-        ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.beginPath();
-        ctx.moveTo(wallX, desY + desH_px); ctx.lineTo(wallX - 60, desY + desH_px); ctx.stroke();
-        ctx.fillText(`${state.hBot.toFixed(1)}م عن الأرض`, wallX - 20, desY + desH_px + 20);
-
-        // رسم البروجكتور
-        ctx.fillStyle = "#9b59b6"; ctx.fillRect(projX - 40, projY - 15, 50, 30);
+        // نصوص المقاسات
+        ctx.fillStyle = "#fff"; ctx.font = "bold 13px Segoe UI"; ctx.textAlign = "right";
+        ctx.fillText(`↔️ العرض: ${state.tWidth.toFixed(2)} م`, wallX - (desW_px/2) - 10, desY + (desH_px/2));
+        ctx.fillText(`↕️ الارتفاع: ${actualH.toFixed(2)} م`, wallX - (desW_px/2) - 10, desY + (desH_px/2) + 18);
     }
 
     window.onresize = draw;
     draw();
 </script>
+
 </body>
 </html>
