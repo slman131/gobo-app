@@ -5,143 +5,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gobo Pro - 3D Visual Simulator</title>
     <style>
-        :root { --bg: #05050a; --card: rgba(15, 15, 25, 0.8); --primary: #9b59b6; --secondary: #3498db; --accent: #ff00ff; --success: #2ecc71; --warning: #ff4757; --text: #f1f2f6; --border: rgba(255, 255, 255, 0.1); }
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        :root { --bg: #0a0a12; --panel: rgba(20, 20, 35, 0.9); --primary: #9b59b6; --secondary: #3498db; --design: #ff00ff; --text: #f1f2f6; --border: rgba(255, 255, 255, 0.1); }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { margin: 0; padding: 20px; background: var(--bg); color: var(--text); overflow-x: hidden; }
         
-        .container { max-width: 1100px; margin: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .back-btn { background: var(--card); color: white; text-decoration: none; padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border); transition: 0.3s; font-size: 14px; }
-        .back-btn:hover { background: var(--primary); box-shadow: 0 0 15px var(--primary); }
+        .header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 20px; }
+        .back-btn { background: var(--panel); color: white; text-decoration: none; padding: 10px 20px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; transition: 0.3s; }
+        .back-btn:hover { background: var(--primary); }
 
-        .simulator-card { background: var(--card); border-radius: 30px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); backdrop-filter: blur(15px); border: 1px solid var(--border); }
-        
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; border-left: 4px solid var(--primary); }
-        .stat-label { font-size: 12px; color: #a4b0be; display: block; margin-bottom: 5px; }
-        .stat-value { font-size: 22px; font-weight: bold; }
-        .stat-value.alert { color: var(--warning); text-shadow: 0 0 10px var(--warning); }
+        .app-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; max-width: 1400px; margin: auto; }
+        @media (max-width: 1000px) { .app-grid { grid-template-columns: 1fr; } }
 
-        .canvas-container { width: 100%; height: 450px; background: #000; border-radius: 20px; position: relative; border: 2px solid #1a1a2e; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,0,0,1); }
+        /* منطقة المحاكي */
+        .simulator-viewport { background: #000; border-radius: 25px; position: relative; border: 2px solid #1e1e30; height: 600px; overflow: hidden; box-shadow: inset 0 0 100px rgba(0,0,0,1); }
         canvas { width: 100%; height: 100%; display: block; }
 
-        .controls-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; }
-        @media (max-width: 768px) { .controls-panel { grid-template-columns: 1fr; } }
-        
-        .control-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; border: 1px solid var(--border); }
-        .control-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .control-label { font-size: 14px; font-weight: bold; color: var(--secondary); }
+        /* لوحة التحكم */
+        .controls-panel { background: var(--panel); border-radius: 25px; padding: 20px; border: 1px solid var(--border); backdrop-filter: blur(10px); height: fit-content; }
+        .control-group { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .control-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; color: var(--secondary); margin-bottom: 10px; }
+        .val-badge { background: var(--primary); padding: 2px 8px; border-radius: 5px; color: white; font-size: 12px; }
         
         input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
-        input[type="number"] { width: 65px; background: #000; border: 1px solid #444; color: #fff; padding: 5px; border-radius: 8px; text-align: center; }
-        select { width: 100%; background: #000; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 10px; cursor: pointer; }
+        input[type="number"] { width: 100%; background: #000; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 8px; margin-top: 5px; }
+        select { width: 100%; background: #000; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 10px; margin-top: 5px; }
+
+        .status-card { background: #000; border-radius: 15px; padding: 15px; margin-top: 10px; border-right: 4px solid var(--primary); }
+        .status-item { font-size: 12px; color: #888; margin-bottom: 5px; }
+        .status-val { font-size: 18px; font-weight: bold; color: #fff; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h2 style="color:var(--primary); margin:0;">🎭 Gobo Simulator 3D <span style="font-size:12px; color:#666;">(نسخة احترافية)</span></h2>
-        <a href="index.html" class="back-btn">⬅ العودة للحاسبة</a>
+<div class="header">
+    <h2 style="margin:0; color:var(--primary);">🎭 Gobo 3D Simulator (Pro Edition)</h2>
+    <a href="index.html" class="back-btn">⬅ العودة للحاسبة الرئيسية</a>
+</div>
+
+<div class="app-grid">
+    <div class="simulator-viewport">
+        <canvas id="renderCanvas"></canvas>
     </div>
 
-    <div class="simulator-card">
-        <div class="stats-grid">
-            <div class="stat-box">
-                <span class="stat-label">🔦 القطر الأقصى المتاح للعدسة</span>
-                <span class="stat-value" id="valMaxDia">--</span>
-            </div>
-            <div class="stat-box">
-                <span class="stat-label">📐 حالة التصميم (Scale)</span>
-                <span class="stat-value" id="valScaleStatus">--</span>
-            </div>
+    <div class="controls-panel">
+        <div class="status-card">
+            <div class="status-item">📏 الارتفاع الفعلي للتصميم:</div>
+            <div class="status-val" id="calcHeight">0.00 م</div>
+            <div class="status-item" style="margin-top:10px;">🔦 القطر الأقصى المتاح للعدسة:</div>
+            <div class="status-val" id="maxBeam">0.00 م</div>
         </div>
 
-        <div class="canvas-container">
-            <canvas id="mainCanvas"></canvas>
+        <div class="control-group">
+            <div class="control-label">🏢 ارتفاع المبنى بالكامل (متر) <span class="val-badge" id="bH_val">15</span></div>
+            <input type="range" id="bHeight" min="5" max="40" value="15">
         </div>
 
-        <div class="controls-panel">
-            <div class="control-item">
-                <div class="control-head">
-                    <span class="control-label">🏢 ارتفاع المبنى (متر)</span>
-                    <input type="number" id="bHeightInput" value="12">
-                </div>
-                <input type="range" id="bHeightSlider" min="5" max="30" value="12">
-            </div>
+        <div class="control-group">
+            <div class="control-label">🔎 نوع العدسة (Lens Scale)</div>
+            <select id="lens">
+                <option value="0.2">0.2 Scale</option>
+                <option value="0.3">0.3 Scale (Default)</option>
+                <option value="0.45">0.45 Scale</option>
+                <option value="0.65" selected>0.65 Scale (Wide)</option>
+            </select>
+        </div>
 
-            <div class="control-item">
-                <div class="control-head">
-                    <span class="control-label">🔎 اختيار العدسة (Scale)</span>
-                </div>
-                <select id="lensSelect">
-                    <option value="0.2">0.2 Scale (Long Throw)</option>
-                    <option value="0.3">0.3 Scale (Default)</option>
-                    <option value="0.45">0.45 Scale (Medium)</option>
-                    <option value="0.65" selected>0.65 Scale (Wide Angle)</option>
-                </select>
-            </div>
+        <div class="control-group">
+            <div class="control-label">📏 المسافة للجدار (D) <span class="val-badge" id="dist_val">8.5</span></div>
+            <input type="range" id="dist" min="2" max="40" step="0.5" value="8.5">
+        </div>
 
-            <div class="control-item">
-                <div class="control-head">
-                    <span class="control-label">📏 المسافة للجدار (D)</span>
-                    <input type="number" id="distInput" value="8.5">
-                </div>
-                <input type="range" id="distSlider" min="2" max="40" step="0.5" value="8.5">
-            </div>
+        <div class="control-group">
+            <div class="control-label">✨ عرض التصميم (متر) <span class="val-badge" id="tW_val">5</span></div>
+            <input type="range" id="tWidth" min="1" max="20" step="0.1" value="5">
+        </div>
 
-            <div class="control-item">
-                <div class="control-head">
-                    <span class="control-label">✨ عرض التصميم المستهدف</span>
-                    <input type="number" id="tWidthInput" value="7.8">
-                </div>
-                <input type="range" id="tWidthSlider" min="1" max="20" step="0.1" value="7.8">
-            </div>
+        <div class="control-group">
+            <div class="control-label">⬆️ أعلى نقطة (H_top) <span class="val-badge" id="hTop_val">10</span></div>
+            <input type="range" id="hTop" min="0" max="40" step="0.1" value="10">
+        </div>
 
-            <div class="control-item">
-                <div class="control-head">
-                    <span class="control-label">⬆️ أعلى نقطة (H_top)</span>
-                    <input type="number" id="hTopInput" value="9">
-                </div>
-                <input type="range" id="hTopSlider" min="0" max="30" step="0.1" value="9">
-            </div>
-
-            <div class="control-item">
-                <div class="control-head">
-                    <span class="control-label">⬇️ أدنى نقطة (H_bot)</span>
-                    <input type="number" id="hBotInput" value="3.5">
-                </div>
-                <input type="range" id="hBotSlider" min="0" max="30" step="0.1" value="3.5">
-            </div>
+        <div class="control-group">
+            <div class="control-label">⬇️ أدنى نقطة (H_bot) <span class="val-badge" id="hBot_val">4</span></div>
+            <input type="range" id="hBot" min="0" max="40" step="0.1" value="4">
         </div>
     </div>
 </div>
 
 <script>
-    const canvas = document.getElementById('mainCanvas');
+    const canvas = document.getElementById('renderCanvas');
     const ctx = canvas.getContext('2d');
 
     const state = {
-        dist: 8.5,
+        bHeight: 15,
         lens: 0.65,
-        bHeight: 12,
-        tWidth: 7.8,
-        hTop: 9,
-        hBot: 3.5
+        dist: 8.5,
+        tWidth: 5,
+        hTop: 10,
+        hBot: 4
     };
 
-    // ربط المدخلات
-    const inputs = ['dist', 'bHeight', 'tWidth', 'hTop', 'hBot'];
-    inputs.forEach(id => {
-        const slider = document.getElementById(id + 'Slider');
-        const num = document.getElementById(id + 'Input');
-        slider.oninput = (e) => { num.value = e.target.value; state[id] = parseFloat(e.target.value); update(); };
-        num.oninput = (e) => { slider.value = e.target.value; state[id] = parseFloat(e.target.value); update(); };
+    // ربط السلايدرز
+    const sliders = ['bHeight', 'dist', 'tWidth', 'hTop', 'hBot'];
+    sliders.forEach(id => {
+        const el = document.getElementById(id);
+        el.oninput = (e) => {
+            state[id] = parseFloat(e.target.value);
+            document.getElementById(id + '_val').innerText = e.target.value;
+            update();
+        };
     });
-    document.getElementById('lensSelect').onchange = (e) => { state.lens = parseFloat(e.target.value); update(); };
+    document.getElementById('lens').onchange = (e) => { state.lens = parseFloat(e.target.value); update(); };
 
     function update() {
-        // resize canvas
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
         draw();
@@ -150,98 +126,103 @@
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        const pxPerMeter = canvas.height / (state.bHeight * 1.5);
-        const groundY = canvas.height - 50;
-        const wallX = canvas.width - 150;
-        const projX = 80;
-        const projY = groundY - (1.5 * pxPerMeter); // افتراض ارتفاع البروجكتور 1.5م
-
-        // 1. رسم المبنى (3D Effect)
-        ctx.fillStyle = "#1a1a2e";
-        const bH_px = state.bHeight * pxPerMeter;
-        ctx.fillRect(wallX, groundY - bH_px, 100, bH_px);
-        ctx.strokeStyle = "#2f3542";
-        ctx.strokeRect(wallX, groundY - bH_px, 100, bH_px);
+        // مقياس الرسم (Pixels per Meter)
+        const margin = 80;
+        const availableH = canvas.height - (margin * 2);
+        const pxMeter = availableH / state.bHeight;
         
-        // رسم خطوط الطوابق للواقعية
+        const groundY = canvas.height - margin;
+        const wallX = canvas.width - 250;
+        const projX = 100;
+        const projY = groundY - (1.5 * pxMeter); // ارتفاع افتراضي للبروجكتور
+
+        // 1. رسم الأرضية (3D Perspective)
         ctx.beginPath();
-        for(let i=0; i<state.bHeight; i+=3) {
-            let y = groundY - (i * pxPerMeter);
-            ctx.moveTo(wallX, y); ctx.lineTo(wallX + 100, y);
-        }
-        ctx.strokeStyle = "rgba(255,255,255,0.05)";
+        ctx.moveTo(0, groundY);
+        ctx.lineTo(canvas.width, groundY);
+        ctx.strokeStyle = '#222';
+        ctx.lineWidth = 2;
         ctx.stroke();
 
-        // 2. حسابات الجوبو
-        const maxDia = state.dist * state.lens;
-        const designH = Math.abs(state.hTop - state.hBot);
-        const designMax = Math.max(state.tWidth, designH);
-        let scale = (designMax / maxDia) * 100;
-
-        document.getElementById('valMaxDia').innerText = maxDia.toFixed(2) + " م";
-        const status = document.getElementById('valScaleStatus');
-        if(scale > 100) {
-            status.innerText = "⚠️ أكبر من العدسة!";
-            status.className = "stat-value alert";
-        } else {
-            status.innerText = scale.toFixed(1) + "% (آمن)";
-            status.className = "stat-value";
-            status.style.color = "var(--success)";
+        // 2. رسم المبنى (The Building)
+        const bH_px = state.bHeight * pxMeter;
+        const bW_px = 200;
+        
+        // واجهة المبنى
+        ctx.fillStyle = "#11111d";
+        ctx.fillRect(wallX, groundY - bH_px, bW_px, bH_px);
+        
+        // خطوط النوافذ/الطوابق للواقعية
+        ctx.strokeStyle = "rgba(255,255,255,0.05)";
+        for(let i=0; i<=state.bHeight; i+=3) {
+            let y = groundY - (i * pxMeter);
+            ctx.beginPath();
+            ctx.moveTo(wallX, y); ctx.lineTo(wallX + bW_px, y);
+            ctx.stroke();
         }
 
-        // 3. رسم أشعة البروجكتور (Beam)
-        const beamRadius = (maxDia / 2) * pxPerMeter;
-        const beamCenterY = groundY - ( ( (state.hTop + state.hBot) / 2 ) * pxPerMeter );
+        // 3. حسابات التصميم (The Gobo Design)
+        const actualH = Math.abs(state.hTop - state.hBot);
+        document.getElementById('calcHeight').innerText = actualH.toFixed(2) + " م";
         
-        const gradient = ctx.createRadialGradient(projX, projY, 5, projX, projY, canvas.width);
-        gradient.addColorStop(0, 'rgba(52, 152, 219, 0.4)');
-        gradient.addColorStop(0.5, 'rgba(52, 152, 219, 0.05)');
-        gradient.addColorStop(1, 'transparent');
+        const maxDia = state.dist * state.lens;
+        document.getElementById('maxBeam').innerText = maxDia.toFixed(2) + " م";
+
+        // 4. رسم أشعة البروجكتور (The Beam)
+        const beamCenterH = (state.hTop + state.hBot) / 2;
+        const beamCenterY = groundY - (beamCenterH * pxMeter);
+        const beamRadiusPX = (maxDia / 2) * pxMeter;
+
+        const beamGrad = ctx.createRadialGradient(projX, projY, 0, projX, projY, canvas.width);
+        beamGrad.addColorStop(0, 'rgba(52, 152, 219, 0.5)');
+        beamGrad.addColorStop(0.6, 'rgba(52, 152, 219, 0.05)');
+        beamGrad.addColorStop(1, 'transparent');
 
         ctx.beginPath();
         ctx.moveTo(projX, projY);
-        ctx.lineTo(wallX, beamCenterY - beamRadius);
-        ctx.lineTo(wallX, beamCenterY + beamRadius);
+        ctx.lineTo(wallX, beamCenterY - beamRadiusPX);
+        ctx.lineTo(wallX, beamCenterY + beamRadiusPX);
         ctx.closePath();
-        ctx.fillStyle = gradient;
+        ctx.fillStyle = beamGrad;
         ctx.fill();
 
-        // 4. رسم التصميم (الأيقونة المضيئة)
-        const desH_px = designH * pxPerMeter;
-        const desW_px = (state.tWidth / designMax) * desH_px; // نسبية
-        const desY = groundY - (state.hTop * pxPerMeter);
+        // 5. أيقونة التصميم (The Design Icon Overlay)
+        const desH_px = actualH * pxMeter;
+        const desW_px = state.tWidth * pxMeter; // استخدام العرض الفعلي المدخل
+        const desY = groundY - (state.hTop * pxMeter);
 
-        // توهج خلفية التصميم
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = "var(--accent)";
-        ctx.strokeStyle = "var(--accent)";
+        // توهج التصميم
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = "#ff00ff";
+        
+        // رسم برواز التصميم على واجهة المبنى
+        ctx.strokeStyle = "#ff00ff";
         ctx.lineWidth = 3;
-        ctx.strokeRect(wallX - 5, desY, 10, desH_px); // خط العرض على الجدار
+        ctx.setLineDash([5, 5]); // خط مقطع كأنه ليزر
+        ctx.strokeRect(wallX + 10, desY, 100, desH_px); // تمثيل العرض بخط رمزي على المبنى
         
-        // رسم برواز التصميم التخيلي
+        // رسم "أيقونة" التصميم ككتلة ضوء
         ctx.fillStyle = "rgba(255, 0, 255, 0.2)";
-        ctx.fillRect(wallX - 2, desY, 5, desH_px);
-        
+        ctx.fillRect(wallX + 10, desY, 100, desH_px);
+        ctx.setLineDash([]);
         ctx.shadowBlur = 0;
 
-        // 5. كتابة المقاسات على الرسمة
+        // 6. عرض المقاسات بجانب التصميم
         ctx.fillStyle = "#fff";
-        ctx.font = "bold 12px Cairo";
+        ctx.font = "bold 14px Segoe UI";
         ctx.textAlign = "right";
-        ctx.fillText(`الارتفاع: ${designH.toFixed(2)}م`, wallX - 15, desY + (desH_px/2));
-        ctx.fillText(`العرض: ${state.tWidth.toFixed(2)}م`, wallX - 15, desY + (desH_px/2) + 18);
-        
-        // خطوط توضيحية للـ H_top و H_bot
-        ctx.setLineDash([5, 5]);
-        ctx.strokeStyle = "rgba(255,255,255,0.3)";
-        ctx.beginPath();
-        ctx.moveTo(wallX, desY); ctx.lineTo(wallX - 40, desY);
-        ctx.moveTo(wallX, desY + desH_px); ctx.lineTo(wallX - 40, desY + desH_px);
-        ctx.stroke();
-        ctx.setLineDash([]);
+        ctx.fillText(`الارتفاع: ${actualH.toFixed(2)} م`, wallX - 10, desY + (desH_px/2));
+        ctx.fillText(`العرض: ${state.tWidth.toFixed(2)} م`, wallX - 10, desY + (desH_px/2) + 20);
 
-        // رسم البروجكتور (Icon)
-        ctx.fillStyle = var(--primary);
+        // خطوط توضح الارتفاع عن الأرض
+        ctx.strokeStyle = "rgba(255,255,255,0.2)";
+        ctx.beginPath();
+        ctx.moveTo(wallX, desY + desH_px); ctx.lineTo(wallX - 50, desY + desH_px);
+        ctx.stroke();
+        ctx.fillText(`${state.hBot.toFixed(1)}م عن الأرض`, wallX - 10, desY + desH_px + 20);
+
+        // رسم البروجكتور
+        ctx.fillStyle = "#9b59b6";
         ctx.fillRect(projX - 40, projY - 15, 50, 30);
         ctx.beginPath();
         ctx.moveTo(projX + 10, projY - 10); ctx.lineTo(projX + 25, projY - 15);
