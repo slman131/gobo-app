@@ -2,279 +2,310 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Gobo Pro">
-    <title>Gobo Pro - Ultimate Engineering</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gobo Pro - Ultimate Suite</title>
     <style>
-        :root { --primary: #2c3e50; --secondary: #3498db; --accent: #e67e22; --success: #27ae60; --warning: #f1c40f; --bg: #f4f6f8; }
-        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: var(--bg); margin: 0; padding: 20px; padding-top: env(safe-area-inset-top); }
-        
-        /* تم زيادة العرض الأقصى ليناسب وضع الشاشتين بجانب بعض */
-        .app-container { max-width: 1200px; margin: auto; background: #fff; padding: 25px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 25px; }
-        
-        /* التحديث الجديد: ترتيب الأقسام بنظام الشبكة (Grid) */
-        .panels-wrapper { display: grid; grid-template-columns: 1fr; gap: 25px; align-items: start; }
-        @media (min-width: 850px) {
-            .panels-wrapper { grid-template-columns: 1fr 1fr; }
+        :root { 
+            --primary: #2c3e50; --secondary: #3498db; --accent: #e67e22; 
+            --success: #27ae60; --dark-bg: #1e1e1e; --card-bg: #252526; 
         }
+        * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        body { background-color: var(--dark-bg); color: #f5f5f5; margin: 0; padding-bottom: 50px; }
+        
+        /* شريط التنقل العلوي */
+        .nav-bar { 
+            display: flex; justify-content: center; background: #000; 
+            padding: 10px; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid var(--secondary);
+        }
+        .nav-item { 
+            padding: 12px 25px; cursor: pointer; color: #888; font-weight: bold; 
+            transition: 0.3s; display: flex; align-items: center; gap: 8px; font-size: 16px;
+        }
+        .nav-item.active { color: var(--secondary); border-bottom: 3px solid var(--secondary); background: #111; }
+        .nav-item:hover { color: #fff; }
 
-        .card { background: #fafafa; border: 1px solid #eee; padding: 20px; border-radius: 15px; }
-        .card-title { font-size: 15px; font-weight: bold; color: #7f8c8d; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .app-container { max-width: 1100px; margin: 20px auto; padding: 20px; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.4s; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .card { background: var(--card-bg); border-radius: 15px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333;}
+        h1, h2 { text-align: center; color: #ffffff; margin-bottom: 25px;}
         
-        label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; font-weight: bold; }
-        input[type="number"], input[type="file"], select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; margin-bottom: 15px; font-size: 16px; }
-        .btn-main { width: 100%; padding: 15px; background: var(--secondary); color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s;}
-        .btn-main:hover { background: #2980b9; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        label { display: block; font-size: 14px; color: #ccc; margin-bottom: 8px; font-weight: bold; }
+        input, select { 
+            width: 100%; padding: 12px; background: #333; border: 1px solid #444; 
+            border-radius: 10px; color: #fff; font-size: 16px; margin-bottom: 15px; 
+        }
         
-        .auto-calc-area { background: #fff; border: 2px solid var(--secondary); padding: 15px; border-radius: 12px; margin-top: 10px; }
-        .warning-box { background: #fcf3cf; color: #9a7d0a; padding: 10px; border-radius: 8px; font-size: 12px; margin-top: 10px; display: none; text-align: center; font-weight:bold; }
+        .btn-main { 
+            width: 100%; padding: 15px; background: var(--success); color: white; 
+            border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px;
+        }
+        .btn-main:hover { background: #1b5e20; }
         
-        .slider-container { margin-top: 15px; margin-bottom: 15px; }
-        input[type="range"] { width: 100%; accent-color: var(--accent); }
-        .canvas-container { text-align: center; margin-top: 20px; background: #fff; padding: 10px; border-radius: 10px; display: none; border: 1px solid #eee;}
-        canvas { max-width: 100%; height: auto; border-radius: 10px; }
-        #downloadBtn { display: none; background: var(--success); margin-top: 20px; }
-        #downloadBtn:hover { background: #219653; }
+        canvas { width: 100%; background: #000; border-radius: 8px; border: 1px solid #555; }
+        .canvas-wrapper { background: #1a1a1a; padding: 15px; border-radius: 12px; border: 1px solid #333; text-align: center;}
+        .canvas-wrapper p { color: #aaa; font-weight: bold; font-size: 15px; margin-top:0; margin-bottom: 10px; }
         
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .result-box { background: #0d47a1; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; color: #fff; font-weight: bold; border: 1px solid #1976d2; }
     </style>
 </head>
 <body>
 
+<div class="nav-bar">
+    <div class="nav-item active" onclick="showPage('vertical-page', this)">↕️ الموازنة الرأسية (Standard)</div>
+    <div class="nav-item" onclick="showPage('horizontal-page', this)">↔️ الموازنة الجانبية (3D Keystone)</div>
+</div>
+
 <div class="app-container">
-    <h1>🎯 Gobo Pro (JWB Edition)</h1>
-<div style="text-align: center; margin-bottom: 20px;">
-        <a href="simulator.html" style="background: #34495e; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">👁️ فتح المحاكي البصري التفاعلي</a>
+    
+    <div id="vertical-page" class="page active">
+        <h1>📐 الموازنة الرأسية (Standard)</h1>
+        <div class="grid-2">
+            <div class="card">
+                <label>عدسة الجهاز (Scale):</label>
+                <select id="v_lensRatio">
+                    <option value="0.3" selected>0.3 Scale (الافتراضية)</option>
+                    <option value="0.2">0.2 Scale</option>
+                    <option value="0.45">0.45 Scale</option>
+                </select>
+                <label>المسافة للجدار (متر):</label>
+                <input type="number" id="v_dist" value="3">
+                <label>ارتفاع البروجكتور (متر):</label>
+                <input type="number" id="v_hProj" value="2">
+                <label>أعلى نقطة للتصميم (H_top):</label>
+                <input type="number" id="v_hTop" value="3">
+                <label>أدنى نقطة للتصميم (H_bot):</label>
+                <input type="number" id="v_hBottom" value="1">
+                <label>العرض المستهدف (متر):</label>
+                <input type="number" id="v_targetW" value="2">
+            </div>
+            <div class="card">
+                <label>رفع الشعار (للموازنة الرأسية):</label>
+                <input type="file" id="v_upload" accept="image/*">
+                <div id="v_results" class="result-box">بانتظار المدخلات...</div>
+                <div class="canvas-wrapper">
+                    <p>ملف التصنيع المعصور رأسياً</p>
+                    <canvas id="v_canvas"></canvas>
+                </div>
+                <button class="btn-main" onclick="download('v_canvas')">⬇️ حفظ ملف التصنيع (الرأسي)</button>
+            </div>
+        </div>
     </div>
-    <div class="panels-wrapper">
+
+    <div id="horizontal-page" class="page">
+        <h1>🏗️ الموازنة الجانبية ثلاثية الأبعاد (True 3D Keystone)</h1>
         
         <div class="card">
-            <div class="card-title">1. القياسات الميدانية (التصغير وتشوه المنظور)</div>
-            
-            <label>عدسة جهازك (Lens Scale):</label>
-            <select id="lensRatio">
-                <option value="0.2">0.2 Scale (للمسافات البعيدة)</option>
-                <option value="0.3" selected>0.3 Scale (العدسة الافتراضية - Default)</option>
-                <option value="0.45">0.45 Scale (للمسافات المتوسطة)</option>
-                <option value="0.65">0.65 Scale (للمسافات القريبة)</option>
-            </select>
-
             <div class="grid-2">
                 <div>
-                    <label>المسافة للجدار (D):</label>
-                    <input type="number" id="dist" placeholder="بالمتر">
+                    <label>البعد العمودي عن الجدار (D) بالمتر:</label>
+                    <input type="number" id="h_distD" value="3.0" step="0.1">
                 </div>
                 <div>
-                    <label>ارتفاع البروجكتور (H_pj):</label>
-                    <input type="number" id="hProj" placeholder="بالمتر">
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div>
-                    <label>أعلى نقطة للتصميم (H_top):</label>
-                    <input type="number" id="hTop" placeholder="بالمتر">
+                    <label>موقع البروجكتور بالنسبة لمنتصف الشعار:</label>
+                    <select id="h_side">
+                        <option value="right">على اليمين (Right)</option>
+                        <option value="left">على اليسار (Left)</option>
+                    </select>
                 </div>
                 <div>
-                    <label>أدنى نقطة للتصميم (H_bot):</label>
-                    <input type="number" id="hBottom" placeholder="بالمتر">
+                    <label>مسافة الإزاحة الجانبية (X) بالمتر:</label>
+                    <input type="number" id="h_offsetX" value="2.7" step="0.1">
                 </div>
-            </div>
-            
-            <div class="auto-calc-area">
-                <label>العرض المستهدف للتصميم (بالمتر):</label>
-                <input type="number" id="targetW" placeholder="عرض الشعار المطلوب على الجدار">
-            </div>
-
-            <div id="resultsBox" style="display:none; margin-top:20px; text-align:center; padding-top: 15px; border-top: 1px dashed #ccc;">
-                <div style="font-size:14px; color:#666;">القطر الأقصى لضوء العدسة: <b id="maxDia">--</b> م</div>
-                <div style="font-size:18px; color:var(--accent); margin-top:8px;">تم ضبط التصغير التلقائي (Scale) إلى: <b id="suggestedScale">--</b></div>
-                <div style="font-size:14px; color:#c0392b; margin-top:8px;">معامل عصر المنظور (Keystone): <b id="ratioVal">--</b></div>
-                <div id="warning" class="warning-box">⚠️ تنبيه: هدفك أكبر من قدرة العدسة! ستحتاج لإرجاع البروجكتور للخلف أو تغيير العدسة.</div>
+                <div>
+                    <label>العرض المطلوب للشعار على الجدار (W) بالمتر:</label>
+                    <input type="number" id="h_targetW" value="3.0" step="0.1">
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label>رفع الشعار (للموازنة الجانبية):</label>
+                    <input type="file" id="h_upload" accept="image/*">
+                </div>
             </div>
         </div>
 
-        <div class="card" id="processorCard" style="display:none;">
-            <div class="card-title">2. تجهيز ملف التصنيع (Gobo 37mm)</div>
-            <input type="file" id="imageUpload" accept="image/*">
-            
-            <div class="slider-container">
-                <label style="display:flex; justify-content:space-between;">
-                    <span>تعديل يدوي للحجم (Scale):</span> 
-                    <span id="scaleValDisplay" style="color:var(--accent); font-weight:bold;">100%</span>
-                </label>
-                <input type="range" id="scaleSlider" min="5" max="100" value="100">
-            </div>
+        <div id="h_results" class="result-box">جاري حساب المنظور البصري...</div>
 
-            <div class="slider-container">
-                <label style="display:flex; justify-content:space-between;">
-                    <span>درجة التباين (Threshold):</span> 
-                    <span id="thresholdValDisplay" style="color:var(--accent); font-weight:bold;">128</span>
-                </label>
-                <input type="range" id="thresholdSlider" min="0" max="255" value="128">
+        <div class="grid-2">
+            <div class="canvas-wrapper">
+                <p>1. ملف التصنيع المصحح (Gobo File)</p>
+                <canvas id="h_goboCanvas"></canvas>
             </div>
-
-            <div style="display:flex; gap:15px; margin-top:20px;">
-                <label style="font-size:14px; cursor:pointer;"><input type="checkbox" id="invert"> عكس الألوان (لإضاءة الشعار)</label>
-                <label style="font-size:14px; cursor:pointer;"><input type="checkbox" id="mask" checked> قناع العدسة (37mm)</label>
-            </div>
-            
-            <div class="canvas-container" id="previewArea">
-                <canvas id="canvas"></canvas>
-                <button id="downloadBtn" class="btn-main" onclick="downloadGobo()">⬇️ حفظ الملف للإرسال لـ AliExpress</button>
+            <div class="canvas-wrapper">
+                <p>2. هكذا كان سيبدو بدون تصحيح (المشكلة)</p>
+                <canvas id="h_wallCanvas"></canvas>
             </div>
         </div>
 
+        <button class="btn-main" onclick="download('h_goboCanvas')" style="background:#2e7d32;">⬇️ حفظ ملف التصنيع (Gobo) للاعتماد</button>
     </div>
+
 </div>
 
 <script>
-    let originalImg = null;
-    let globalRatio = 1;
-
-    const inputsToWatch = ['dist', 'hProj', 'hTop', 'hBottom', 'targetW'];
-    inputsToWatch.forEach(id => {
-        document.getElementById(id).addEventListener('input', calculateSystem);
-    });
-    document.getElementById('lensRatio').addEventListener('change', calculateSystem);
-
-    function calculateSystem() {
-        const d = parseFloat(document.getElementById('dist').value);
-        const hProj = parseFloat(document.getElementById('hProj').value);
-        const hTop = parseFloat(document.getElementById('hTop').value);
-        const hBottom = parseFloat(document.getElementById('hBottom').value);
-        const tW = parseFloat(document.getElementById('targetW').value);
-        const lensRatio = parseFloat(document.getElementById('lensRatio').value);
-
-        if (!d || !hProj || !hTop || !hBottom || !tW) {
-            document.getElementById('resultsBox').style.display = 'none';
-            return; 
-        }
-
-        const h_top_rel = hTop - hProj;
-        const h_bottom_rel = hBottom - hProj;
-        const S_top = Math.sqrt(Math.pow(d, 2) + Math.pow(h_top_rel, 2));
-        const S_bottom = Math.sqrt(Math.pow(d, 2) + Math.pow(h_bottom_rel, 2));
-        globalRatio = S_bottom / S_top;
-        document.getElementById('ratioVal').innerText = (globalRatio * 100).toFixed(1) + "%";
-
-        const maxDiameter = d * lensRatio;
-        document.getElementById('maxDia').innerText = maxDiameter.toFixed(2);
-
-        const targetH = hTop - hBottom;
-        const targetMax = Math.max(tW, targetH);
-        let scale = (targetMax / maxDiameter) * 100;
-
-        if (scale > 100) {
-            document.getElementById('warning').style.display = 'block';
-            scale = 100;
-        } else {
-            document.getElementById('warning').style.display = 'none';
-        }
-
-        document.getElementById('suggestedScale').innerText = scale.toFixed(1) + "%";
-        document.getElementById('resultsBox').style.display = 'block';
-        document.getElementById('processorCard').style.display = 'block';
-        
-        document.getElementById('scaleSlider').value = scale;
-        document.getElementById('scaleValDisplay').innerText = scale.toFixed(1) + "%";
-        
-        if(originalImg) processGobo();
+    // نظام التنقل بين الصفحات
+    function showPage(pageId, element) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        element.classList.add('active');
     }
 
-    document.getElementById('imageUpload').onchange = function(e) {
+    // =========================================================================
+    // منطق الموازنة الرأسية (التطبيق الأصلي)
+    // =========================================================================
+    const vInputs = ['v_dist', 'v_hProj', 'v_hTop', 'v_hBottom', 'v_targetW', 'v_lensRatio'];
+    vInputs.forEach(id => document.getElementById(id).addEventListener('input', processVertical));
+    
+    let vImg = new Image();
+    document.getElementById('v_upload').onchange = (e) => {
         const reader = new FileReader();
-        reader.onload = (ev) => {
-            originalImg = new Image();
-            originalImg.onload = () => processGobo();
-            originalImg.src = ev.target.result;
-        };
+        reader.onload = (ev) => { vImg.src = ev.target.result; vImg.onload = processVertical; };
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    document.getElementById('scaleSlider').oninput = (e) => {
-        document.getElementById('scaleValDisplay').innerText = e.target.value + "%";
-        if(originalImg) processGobo();
-    };
-    
-    document.getElementById('thresholdSlider').oninput = (e) => {
-        document.getElementById('thresholdValDisplay').innerText = e.target.value;
-        if(originalImg) processGobo();
-    };
-    
-    document.getElementById('invert').onchange = () => { if(originalImg) processGobo(); };
-    document.getElementById('mask').onchange = () => { if(originalImg) processGobo(); };
-
-    function processGobo() {
-        if (!originalImg) return;
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const size = Math.max(originalImg.width, originalImg.height);
-        canvas.width = size; canvas.height = size;
-
-        const scale = document.getElementById('scaleSlider').value / 100;
-        const inv = document.getElementById('invert').checked;
-        const threshold = parseInt(document.getElementById('thresholdSlider').value);
-
-        ctx.fillStyle = "rgba(0,0,0,0)";
-        ctx.fillRect(0,0,size,size);
-
-        const w = originalImg.width * scale;
-        const h = originalImg.height * scale;
-        const offsetX = (size-w)/2;
-        const offsetY = (size-h)/2;
-        ctx.drawImage(originalImg, offsetX, offsetY, w, h);
-
-        const imgData = ctx.getImageData(0,0,size,size);
-        for (let i=0; i<imgData.data.length; i+=4) {
-            if (imgData.data[i+3] === 0) continue; 
-            let avg = (imgData.data[i] * 0.299 + imgData.data[i+1] * 0.587 + imgData.data[i+2] * 0.114);
-            let val = avg > threshold ? 255 : 0;
-            if (inv) val = 255 - val;
-            imgData.data[i] = imgData.data[i+1] = imgData.data[i+2] = val;
-            imgData.data[i+3] = 255;
-        }
-        ctx.putImageData(imgData, 0, 0);
-
-        const squeezedCanvas = document.createElement('canvas');
-        squeezedCanvas.width = size; squeezedCanvas.height = size;
-        const squeezedCtx = squeezedCanvas.getContext('2d');
+    function processVertical() {
+        const D = parseFloat(document.getElementById('v_dist').value);
+        const hP = parseFloat(document.getElementById('v_hProj').value);
+        const hT = parseFloat(document.getElementById('v_hTop').value);
+        const hB = parseFloat(document.getElementById('v_hBottom').value);
         
-        squeezedCtx.fillStyle = inv ? "#000" : "#fff";
-        squeezedCtx.fillRect(0, 0, size, size);
+        if(!vImg.src || !D) return;
 
-        for (let y = 0; y < size; y++) {
-            let t = y / size;
-            let currentWidth = (size * globalRatio) * (1 - t) + (size * t);
-            let offX = (size - currentWidth) / 2;
-            squeezedCtx.drawImage(canvas, 0, y, size, 1, offX, y, currentWidth, 1);
+        const ratio = Math.sqrt(Math.pow(D,2)+Math.pow(hB-hP,2)) / Math.sqrt(Math.pow(D,2)+Math.pow(hT-hP,2));
+        document.getElementById('v_results').innerText = `معامل الموازنة الرأسية: ${(ratio*100).toFixed(1)}%`;
+
+        const canvas = document.getElementById('v_canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800; canvas.height = 800;
+        ctx.fillStyle = "black"; ctx.fillRect(0,0,800,800);
+
+        for(let y=0; y<800; y++) {
+            let t = y/800;
+            let currentW = (800 * ratio) * (1-t) + (800 * t);
+            let offX = (800 - currentW)/2;
+            ctx.drawImage(vImg, 0, y*(vImg.height/800), vImg.width, vImg.height/800, offX, y, currentW, 1);
         }
-
-        if (document.getElementById('mask').checked) {
-            squeezedCtx.globalCompositeOperation = 'destination-in';
-            squeezedCtx.beginPath(); squeezedCtx.arc(size/2, size/2, size/2, 0, Math.PI*2); squeezedCtx.fill();
-            squeezedCtx.globalCompositeOperation = 'destination-over';
-            squeezedCtx.fillStyle = "#000"; squeezedCtx.fillRect(0,0,size,size);
-            squeezedCtx.globalCompositeOperation = 'source-over';
-        }
-
-        canvas.width = size; canvas.height = size;
-        ctx.drawImage(squeezedCanvas, 0, 0);
-        document.getElementById('previewArea').style.display = 'block';
-        document.getElementById('downloadBtn').style.display = 'block';
     }
 
-    function downloadGobo() {
+    // =========================================================================
+    // منطق الموازنة الجانبية الدقيقة (التي تم استعادتها 100%)
+    // =========================================================================
+    const hInputs = ['h_distD', 'h_offsetX', 'h_targetW', 'h_side'];
+    hInputs.forEach(id => document.getElementById(id).addEventListener('input', processHorizontal));
+
+    let hImg = new Image();
+    document.getElementById('h_upload').onchange = (e) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => { hImg.src = ev.target.result; hImg.onload = processHorizontal; };
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+    function processHorizontal() {
+        const D = parseFloat(document.getElementById('h_distD').value);
+        let X = parseFloat(document.getElementById('h_offsetX').value);
+        const W = parseFloat(document.getElementById('h_targetW').value);
+        const side = document.getElementById('h_side').value;
+        
+        if(!hImg.src || !D || !W) return;
+
+        // تحديد اتجاه الإزاحة رياضياً
+        if (side === 'left') X = -Math.abs(X);
+        else X = Math.abs(X);
+
+        const canvasSize = 800; 
+        
+        // --- تجهيز الصورة الأصلية بدون قص (السر في الدقة) ---
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = canvasSize; 
+        offCanvas.height = canvasSize;
+        const offCtx = offCanvas.getContext('2d');
+        offCtx.clearRect(0,0, canvasSize, canvasSize);
+        const scaleFit = Math.min(canvasSize / hImg.width, canvasSize / hImg.height);
+        const nw = hImg.width * scaleFit;
+        const nh = hImg.height * scaleFit;
+        offCtx.drawImage(hImg, (canvasSize - nw)/2, (canvasSize - nh)/2, nw, nh);
+
+        // --- إعدادات كانفاس النتيجة ---
+        const goboCanvas = document.getElementById('h_goboCanvas');
+        const wallCanvas = document.getElementById('h_wallCanvas');
+        goboCanvas.width = canvasSize; goboCanvas.height = canvasSize;
+        wallCanvas.width = canvasSize; wallCanvas.height = canvasSize;
+        const gCtx = goboCanvas.getContext('2d');
+        const wCtx = wallCanvas.getContext('2d');
+        
+        // حساب أطول وأقصر مسار للضوء
+        let min_L = Infinity;
+        let max_L = 0;
+        for(let i=0; i<=canvasSize; i++){
+            let t = i/canvasSize;
+            let wallPosition = W * (t - 0.5);
+            let rayLength = Math.sqrt(D*D + Math.pow(X - wallPosition, 2));
+            if(rayLength < min_L) min_L = rayLength;
+            if(rayLength > max_L) max_L = rayLength;
+        }
+
+        document.getElementById('h_results').innerText = `فرق الانتشار الضوئي (معامل العصر): ${((max_L/min_L - 1)*100).toFixed(1)}%`;
+
+        // === رسم المنظور لملف التصنيع (Gobo File) ===
+        let goboScales = new Array(canvasSize);
+        let totalGoboWidth = 0;
+        for (let sx = 0; sx < canvasSize; sx++) {
+            let t = sx / canvasSize;
+            let wallPosition = W * (t - 0.5);
+            let rayLength = Math.sqrt(D*D + Math.pow(X - wallPosition, 2));
+            let scale = min_L / rayLength; 
+            goboScales[sx] = scale;
+            totalGoboWidth += scale;
+        }
+        
+        let widthRatio = canvasSize / totalGoboWidth;
+        let currentDx = 0;
+        for (let sx = 0; sx < canvasSize; sx++) {
+            let sliceW = goboScales[sx] * widthRatio;
+            let gHeight = canvasSize * goboScales[sx];
+            let gOffsetY = (canvasSize - gHeight) / 2;
+            gCtx.drawImage(offCanvas, sx, 0, 1, canvasSize, currentDx, gOffsetY, sliceW + 0.5, gHeight);
+            currentDx += sliceW;
+        }
+
+        // === رسم محاكي الجدار (المشكلة المتوقعة) ===
+        let wallScales = new Array(canvasSize);
+        let totalWallWidth = 0;
+        for (let sx = 0; sx < canvasSize; sx++) {
+            let t = sx / canvasSize;
+            let wallPosition = W * (t - 0.5);
+            let rayLength = Math.sqrt(D*D + Math.pow(X - wallPosition, 2));
+            let scale = rayLength / min_L; 
+            wallScales[sx] = scale;
+            totalWallWidth += scale;
+        }
+
+        let wallWidthRatio = canvasSize / totalWallWidth;
+        let currentWx = 0;
+        let maxWallScale = max_L / min_L;
+        for (let sx = 0; sx < canvasSize; sx++) {
+            let wSliceW = wallScales[sx] * wallWidthRatio;
+            let wHeight = canvasSize * (wallScales[sx] / maxWallScale); 
+            let wOffsetY = (canvasSize - wHeight) / 2;
+            wCtx.drawImage(offCanvas, sx, 0, 1, canvasSize, currentWx, wOffsetY, wSliceW + 0.5, wHeight);
+            currentWx += wSliceW;
+        }
+    }
+
+    function download(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if(!canvas) return;
         const link = document.createElement('a');
-        link.download = 'Gobo_Ultimate_JWB.png';
-        link.href = document.getElementById('canvas').toDataURL('image/png');
+        link.download = canvasId + '_Export.png';
+        link.href = canvas.toDataURL('image/png');
         link.click();
     }
 </script>
-
 </body>
 </html>
