@@ -2,15 +2,18 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gobo Pro">
     <title>Gobo Pro - Ultimate Suite</title>
     <style>
         :root { 
             --primary: #2c3e50; --secondary: #3498db; --accent: #e67e22; 
             --success: #27ae60; --dark-bg: #1e1e1e; --card-bg: #252526; 
         }
-        * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
-        body { background-color: var(--dark-bg); color: #f5f5f5; margin: 0; padding-bottom: 50px; }
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: var(--dark-bg); color: #f5f5f5; margin: 0; padding-bottom: 50px; padding-top: env(safe-area-inset-top); }
         
         /* شريط التنقل العلوي */
         .nav-bar { 
@@ -31,7 +34,7 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .card { background: var(--card-bg); border-radius: 15px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333;}
-        h1, h2 { text-align: center; color: #ffffff; margin-bottom: 25px;}
+        h1, h2 { text-align: center; color: #ffffff; margin-bottom: 25px; font-size: 24px;}
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
@@ -53,6 +56,9 @@
         .canvas-wrapper p { color: #aaa; font-weight: bold; font-size: 15px; margin-top:0; margin-bottom: 10px; }
         
         .result-box { background: #0d47a1; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; color: #fff; font-weight: bold; border: 1px solid #1976d2; }
+        
+        .simulator-link { background: #34495e; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block; transition: 0.3s; border: 1px solid #555;}
+        .simulator-link:hover { background: #2c3e50; }
     </style>
 </head>
 <body>
@@ -64,6 +70,10 @@
 
 <div class="app-container">
     
+    <div style="text-align: center; margin-bottom: 30px;">
+        <a href="simulator.html" class="simulator-link">👁️ فتح المحاكي البصري التفاعلي</a>
+    </div>
+
     <div id="vertical-page" class="page active">
         <h1>📐 الموازنة الرأسية (Standard)</h1>
         <div class="grid-2">
@@ -148,7 +158,6 @@
 </div>
 
 <script>
-    // نظام التنقل بين الصفحات
     function showPage(pageId, element) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -156,9 +165,7 @@
         element.classList.add('active');
     }
 
-    // =========================================================================
-    // منطق الموازنة الرأسية (التطبيق الأصلي)
-    // =========================================================================
+    // ================= منطق الموازنة الرأسية =================
     const vInputs = ['v_dist', 'v_hProj', 'v_hTop', 'v_hBottom', 'v_targetW', 'v_lensRatio'];
     vInputs.forEach(id => document.getElementById(id).addEventListener('input', processVertical));
     
@@ -180,22 +187,25 @@
         const ratio = Math.sqrt(Math.pow(D,2)+Math.pow(hB-hP,2)) / Math.sqrt(Math.pow(D,2)+Math.pow(hT-hP,2));
         document.getElementById('v_results').innerText = `معامل الموازنة الرأسية: ${(ratio*100).toFixed(1)}%`;
 
+        // التحديث الجديد: قراءة الدقة الأصلية للصورة لضمان أعلى جودة عند الحفظ
+        const canvasSize = Math.max(vImg.width, vImg.height, 1000);
+
         const canvas = document.getElementById('v_canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = 800; canvas.height = 800;
-        ctx.fillStyle = "black"; ctx.fillRect(0,0,800,800);
+        canvas.width = canvasSize; 
+        canvas.height = canvasSize;
+        ctx.fillStyle = "black"; ctx.fillRect(0,0,canvasSize,canvasSize);
 
-        for(let y=0; y<800; y++) {
-            let t = y/800;
-            let currentW = (800 * ratio) * (1-t) + (800 * t);
-            let offX = (800 - currentW)/2;
-            ctx.drawImage(vImg, 0, y*(vImg.height/800), vImg.width, vImg.height/800, offX, y, currentW, 1);
+        for(let y=0; y<canvasSize; y++) {
+            let t = y/canvasSize;
+            let currentW = (canvasSize * ratio) * (1-t) + (canvasSize * t);
+            let offX = (canvasSize - currentW)/2;
+            // إضافة 1.5 لسد أي فراغات بكسل دقيقة عند المعالجة
+            ctx.drawImage(vImg, 0, y*(vImg.height/canvasSize), vImg.width, vImg.height/canvasSize, offX, y, currentW, 1.5);
         }
     }
 
-    // =========================================================================
-    // منطق الموازنة الجانبية الدقيقة (التي تم استعادتها 100%)
-    // =========================================================================
+    // ================= منطق الموازنة الجانبية =================
     const hInputs = ['h_distD', 'h_offsetX', 'h_targetW', 'h_side'];
     hInputs.forEach(id => document.getElementById(id).addEventListener('input', processHorizontal));
 
@@ -214,13 +224,12 @@
         
         if(!hImg.src || !D || !W) return;
 
-        // تحديد اتجاه الإزاحة رياضياً
         if (side === 'left') X = -Math.abs(X);
         else X = Math.abs(X);
 
-        const canvasSize = 800; 
+        // التحديث الجديد: قراءة الدقة الأصلية للصورة لضمان أعلى جودة
+        const canvasSize = Math.max(hImg.width, hImg.height, 1000); 
         
-        // --- تجهيز الصورة الأصلية بدون قص (السر في الدقة) ---
         const offCanvas = document.createElement('canvas');
         offCanvas.width = canvasSize; 
         offCanvas.height = canvasSize;
@@ -231,7 +240,6 @@
         const nh = hImg.height * scaleFit;
         offCtx.drawImage(hImg, (canvasSize - nw)/2, (canvasSize - nh)/2, nw, nh);
 
-        // --- إعدادات كانفاس النتيجة ---
         const goboCanvas = document.getElementById('h_goboCanvas');
         const wallCanvas = document.getElementById('h_wallCanvas');
         goboCanvas.width = canvasSize; goboCanvas.height = canvasSize;
@@ -239,7 +247,6 @@
         const gCtx = goboCanvas.getContext('2d');
         const wCtx = wallCanvas.getContext('2d');
         
-        // حساب أطول وأقصر مسار للضوء
         let min_L = Infinity;
         let max_L = 0;
         for(let i=0; i<=canvasSize; i++){
@@ -252,7 +259,6 @@
 
         document.getElementById('h_results').innerText = `فرق الانتشار الضوئي (معامل العصر): ${((max_L/min_L - 1)*100).toFixed(1)}%`;
 
-        // === رسم المنظور لملف التصنيع (Gobo File) ===
         let goboScales = new Array(canvasSize);
         let totalGoboWidth = 0;
         for (let sx = 0; sx < canvasSize; sx++) {
@@ -270,11 +276,10 @@
             let sliceW = goboScales[sx] * widthRatio;
             let gHeight = canvasSize * goboScales[sx];
             let gOffsetY = (canvasSize - gHeight) / 2;
-            gCtx.drawImage(offCanvas, sx, 0, 1, canvasSize, currentDx, gOffsetY, sliceW + 0.5, gHeight);
+            gCtx.drawImage(offCanvas, sx, 0, 1, canvasSize, currentDx, gOffsetY, sliceW + 1.5, gHeight);
             currentDx += sliceW;
         }
 
-        // === رسم محاكي الجدار (المشكلة المتوقعة) ===
         let wallScales = new Array(canvasSize);
         let totalWallWidth = 0;
         for (let sx = 0; sx < canvasSize; sx++) {
@@ -293,7 +298,7 @@
             let wSliceW = wallScales[sx] * wallWidthRatio;
             let wHeight = canvasSize * (wallScales[sx] / maxWallScale); 
             let wOffsetY = (canvasSize - wHeight) / 2;
-            wCtx.drawImage(offCanvas, sx, 0, 1, canvasSize, currentWx, wOffsetY, wSliceW + 0.5, wHeight);
+            wCtx.drawImage(offCanvas, sx, 0, 1, canvasSize, currentWx, wOffsetY, wSliceW + 1.5, wHeight);
             currentWx += wSliceW;
         }
     }
@@ -302,8 +307,8 @@
         const canvas = document.getElementById(canvasId);
         if(!canvas) return;
         const link = document.createElement('a');
-        link.download = canvasId + '_Export.png';
-        link.href = canvas.toDataURL('image/png');
+        link.download = canvasId + '_HighRes.png';
+        link.href = canvas.toDataURL('image/png', 1.0);
         link.click();
     }
 </script>
